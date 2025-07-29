@@ -1,17 +1,30 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import './App.css';
 import LoginScreen from './components/LoginScreen';
+import HomeScreen from './components/HomeScreen';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+  };
+
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<LoginScreen />} />
-          <Route path="/login" element={<LoginScreen />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      {isLoggedIn ? (
+        <HomeScreen user={currentUser} onLogout={handleLogout} />
+      ) : (
+        <LoginScreen onLoginSuccess={handleLoginSuccess} />
+      )}
+    </div>
   );
 }
 

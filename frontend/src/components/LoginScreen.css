@@ -157,6 +157,17 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+.error-message {
+  background: #fee;
+  color: #c53030;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border: 1px solid #feb2b2;
+  text-align: center;
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;

@@ -1,0 +1,138 @@
+.home-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #B5394C 0%, #03C1F7 100%);
+}
+
+.home-container {
+  background: #FFF;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  max-width: 600px;
+  width: 100%;
+  animation: slideUp 0.6s ease-out;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.home-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.home-header p {
+  color: #666;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.home-content {
+  text-align: center;
+}
+
+.welcome-card {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 2px solid #e9ecef;
+}
+
+.welcome-card h2 {
+  color: #B5394C;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.welcome-card p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.user-info {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.user-info p {
+  margin: 8px 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.logout-btn {
+  background: #B5394C;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(181, 57, 76, 0.3);
+}
+
+.logout-btn:hover {
+  background: #a03144;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(181, 57, 76, 0.4);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+  
+  .home-header h1 {
+    font-size: 2rem;
+  }
+  
+  .welcome-card {
+    padding: 20px;
+  }
+  
+  .welcome-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 24px 16px;
+  }
+  
+  .home-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .welcome-card {
+    padding: 15px;
+  }
+}

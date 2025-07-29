@@ -3,9 +3,11 @@ import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaUserShield } from 'rea
 import './LoginScreen.css';
 import logo from '../assets/MediCaps-Logo-no-bg.png';
 
-const LoginScreen = () => {
+const LoginScreen = ({ onLoginSuccess }) => {
   const [activeTab, setActiveTab] = useState('user');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,12 +20,93 @@ const LoginScreen = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear error message when user starts typing
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission based on active tab
-    console.log('Form submitted:', { tab: activeTab, data: formData });
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      let endpoint = '';
+      let requestData = {};
+
+      if (activeTab === 'user') {
+        endpoint = 'http://localhost:5000/api/login';
+        requestData = {
+          email: formData.email,
+          password: formData.password
+        };
+      } else if (activeTab === 'admin') {
+        endpoint = 'http://localhost:5000/api/admin/login';
+        requestData = {
+          email: formData.email, // Using email field for admin_id
+          password: formData.password
+        };
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Login successful
+        if (activeTab === 'user') {
+          onLoginSuccess(data.user);
+        } else {
+          onLoginSuccess(data.admin);
+        }
+      } else {
+        // Login failed
+        setErrorMessage(data.error || 'Login failed');
+      }
+    } catch (error) {
+      setErrorMessage('Network error. Please check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Registration successful, switch to login tab
+        setActiveTab('user');
+        setFormData({ email: '', password: '', confirmPassword: '', name: '' });
+        setErrorMessage('');
+        alert('Registration successful! Please login with your credentials.');
+      } else {
+        setErrorMessage(data.error || 'Registration failed');
+      }
+    } catch (error) {
+      setErrorMessage('Network error. Please check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGuestLogin = () => {
@@ -74,14 +157,20 @@ const LoginScreen = () => {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
-        Login
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
+
+      <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+        {isLoading ? 'Logging in...' : 'Login'}
       </button>
     </form>
   );
 
   const renderRegister = () => (
-    <form onSubmit={handleSubmit} className="login-form">
+    <form onSubmit={handleRegister} className="login-form">
       <div className="form-group">
         <label className="form-label">
           <FaUser className="form-icon" />
@@ -164,8 +253,14 @@ const LoginScreen = () => {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
-        Register
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
+
+      <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+        {isLoading ? 'Registering...' : 'Register'}
       </button>
     </form>
   );
@@ -213,8 +308,14 @@ const LoginScreen = () => {
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
-        Admin Login
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
+
+      <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+        {isLoading ? 'Logging in...' : 'Admin Login'}
       </button>
     </form>
   );
@@ -237,8 +338,8 @@ const LoginScreen = () => {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
-        Reset Password
+      <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+        {isLoading ? 'Sending...' : 'Reset Password'}
       </button>
     </form>
   );
