@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaUserShield } from 'react-icons/fa';
 import './LoginScreen.css';
+import logo from '../assets/MediCaps-Logo-no-bg.png';
 
 const LoginScreen = () => {
   const [activeTab, setActiveTab] = useState('user');
@@ -248,7 +249,7 @@ const LoginScreen = () => {
         <div className="login-container">
           <div className="login-header">
             <img 
-              src="/Medicaps-Logo.png" 
+              src={logo} 
               alt="Medi-Caps University Logo" 
               className="header-logo"
             />
