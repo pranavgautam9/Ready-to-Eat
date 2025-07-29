@@ -252,7 +252,7 @@ const LoginScreen = () => {
               alt="Medi-Caps University Logo" 
               className="header-logo"
             />
-            <h1 className="header-title">Medi-Caps Cafeteria</h1>
+            <h1 className="header-title">Ready-to-Eat</h1>
             <p className="header-subtitle">Welcome back! Please sign in to continue.</p>
           </div>
 
