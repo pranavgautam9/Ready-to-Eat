@@ -104,11 +104,11 @@ Ready-to-Eat/
 ## Test User
 
 The following test user is pre-loaded in the database:
-- First Name: Pranav
-- Last Name: Gautam
-- Email: pranavgautam27@gmail.com
+- First Name: Test
+- Last Name: User
+- Email: testuser@gmail.com
 - Password: Password123!
-- Mobile: 3527406203
+- Mobile: 9999999999
 
 ## Technologies Used
 
