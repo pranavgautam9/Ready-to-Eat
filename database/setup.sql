@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS users (
 -- Insert test user (password: Password123!)
 INSERT INTO users (first_name, last_name, email, password_hash, mobile) 
 VALUES (
-    'Pranav', 
-    'Gautam', 
-    'pranavgautam27@gmail.com', 
+    'Test', 
+    'User', 
+    'testuser@gmail.com', 
     'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
-    '3527406203'
+    '9999999999'
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Create indexes for better performance
