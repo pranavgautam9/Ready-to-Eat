@@ -1,6 +1,6 @@
 /* Register page specific styles */
 .register-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-red) 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -26,7 +26,33 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple), var(--accent-red));
+  background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
+}
+
+/* Logo image styling */
+.logo-image {
+  width: 180px;
+  height: auto;
+  margin: 0 auto 16px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Logo divider styling */
+.logo-divider {
+  width: 80%;
+  height: 1px;
+  background: var(--gray-300);
+  margin: 0 auto 16px;
+  border-radius: 0.5px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .form-row {
@@ -45,11 +71,28 @@
     margin: 20px;
     border-radius: 16px;
   }
+  
+  .logo-text {
+    font-size: 24px;
+  }
+  
+  .logo-subtitle {
+    font-size: 14px;
+  }
+  
+  .page-title {
+    font-size: 20px;
+  }
+  
+  .logo-image {
+    width: 100px;
+    margin: 0 auto 12px;
+  }
 }
 
 .form-input:focus {
-  border-color: var(--secondary-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(5, 40, 141, 0.1);
   transform: translateY(-1px);
 }
 
@@ -92,27 +135,13 @@
 }
 
 .link {
-  color: var(--secondary-blue);
+  color: var(--primary-blue);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
 .link:hover {
-  color: var(--primary-blue);
+  color: var(--primary-red);
   text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .logo-text {
-    font-size: 24px;
-  }
-  
-  .logo-subtitle {
-    font-size: 14px;
-  }
-  
-  .page-title {
-    font-size: 20px;
-  }
 }

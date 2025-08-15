@@ -1,13 +1,17 @@
 from flask import Flask, session
 from flask_cors import CORS
-from models import db, User
+from models import db, User, Admin
 from routes import api
 from config import Config
 import os
+from datetime import timedelta
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    
+    # Configure session persistence (15 days)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
     
     # Initialize extensions
     db.init_app(app)
@@ -35,6 +39,19 @@ def create_app():
             db.session.add(test_user)
             db.session.commit()
             print("Test user created successfully!")
+        
+        # Add test admin if it doesn't exist
+        test_admin = Admin.query.filter_by(username='admin').first()
+        if not test_admin:
+            test_admin = Admin(
+                username='admin',
+                full_name='System Administrator',
+                role='super_admin'
+            )
+            test_admin.set_password('Admin123!')
+            db.session.add(test_admin)
+            db.session.commit()
+            print("Test admin created successfully!")
     
     @app.route('/')
     def index():
