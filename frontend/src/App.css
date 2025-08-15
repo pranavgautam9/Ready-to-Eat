@@ -2,6 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 70px; /* Account for fixed navigation */
 }
 
 .auth-container {
@@ -177,4 +178,27 @@
 
 .link:hover {
   text-decoration: underline;
+}
+
+.page-container {
+  min-height: calc(100vh - 70px);
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-container h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.page-container p {
+  font-size: 18px;
+  color: var(--text-light);
+  text-align: center;
+  line-height: 1.6;
 }

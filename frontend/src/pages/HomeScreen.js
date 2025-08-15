@@ -1,6 +1,7 @@
 import React from 'react';
 import './HomeScreen.css';
 import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
+import { Link } from 'react-router-dom';
 
 const HomeScreen = ({ user, onLogout }) => {
   const formatDate = (dateString) => {
@@ -32,8 +33,24 @@ const HomeScreen = ({ user, onLogout }) => {
             Welcome, {user?.first_name} {user?.last_name}! 🎉
           </h1>
           <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '18px' }}>
-            You have successfully logged into your account.
+            {user?.is_guest ? 'Guest Access - Temporary Account' : 'You have successfully logged into your account.'}
           </p>
+          {user?.is_guest && (
+            <div style={{ 
+              background: 'rgba(255, 193, 7, 0.2)', 
+              border: '1px solid rgba(255, 193, 7, 0.5)',
+              borderRadius: '8px',
+              padding: '12px',
+              marginTop: '16px',
+              color: '#856404'
+            }}>
+              ⚠️ Guest Mode: Your session will end when you close the browser. 
+              <br />
+              <Link to="/register" style={{ color: '#856404', textDecoration: 'underline' }}>
+                Create a permanent account
+              </Link> to save your preferences and order history.
+            </div>
+          )}
         </div>
 
         <div className="user-info">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
+import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
 
 const Register = ({ onRegister }) => {
   const [formData, setFormData] = useState({
@@ -101,11 +102,14 @@ const Register = ({ onRegister }) => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="logo">
+          <img 
+            src={MediCapsLogo} 
+            alt="MediCaps University Logo" 
+            className="logo-image"
+          />
           <div className="logo-text">Ready-to-Eat</div>
-          <div className="logo-subtitle">Medi-Caps University Cafeteria</div>
+          <div className="logo-divider"></div>
         </div>
-
-        <h1 className="page-title">Create Account</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="form-row">

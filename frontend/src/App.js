@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SplashScreen from './pages/SplashScreen';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import HomeScreen from './pages/HomeScreen';
+import AdminHomeScreen from './pages/AdminHomeScreen';
+import Navigation from './components/Navigation';
 import './App.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [admin, setAdmin] = useState(null);
+  const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,8 +28,21 @@ function App() {
       
       if (response.ok) {
         const data = await response.json();
-        setUser(data.user);
-        setIsAuthenticated(true);
+        if (data.user.is_guest) {
+          setUser(data.user);
+          setUserType('guest');
+          setIsAuthenticated(true);
+        } else if (data.user.role) {
+          // This is an admin
+          setAdmin(data.user);
+          setUserType('admin');
+          setIsAuthenticated(true);
+        } else {
+          // This is a regular user
+          setUser(data.user);
+          setUserType('user');
+          setIsAuthenticated(true);
+        }
       } else {
         // User is not authenticated, which is normal for new visitors
         console.log('User not authenticated, redirecting to login');
@@ -39,6 +57,19 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    setUserType('user');
+    setIsAuthenticated(true);
+  };
+
+  const handleAdminLogin = (adminData) => {
+    setAdmin(adminData);
+    setUserType('admin');
+    setIsAuthenticated(true);
+  };
+
+  const handleGuestLogin = (guestData) => {
+    setUser(guestData);
+    setUserType('guest');
     setIsAuthenticated(true);
   };
 
@@ -52,6 +83,8 @@ function App() {
       console.error('Logout failed:', error);
     } finally {
       setUser(null);
+      setAdmin(null);
+      setUserType(null);
       setIsAuthenticated(false);
     }
   };
@@ -62,7 +95,6 @@ function App() {
         <div className="card">
           <div className="logo">
             <div className="logo-text">Ready-to-Eat</div>
-            <div className="logo-subtitle">Loading...</div>
           </div>
         </div>
       </div>
@@ -72,36 +104,87 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {isAuthenticated && userType !== 'admin' && (
+          <Navigation cartItemCount={0} />
+        )}
         <Routes>
+          <Route 
+            path="/" 
+            element={<SplashScreen />}
+          />
           <Route 
             path="/login" 
             element={
               isAuthenticated ? 
-              <Navigate to="/home" replace /> : 
-              <Login onLogin={handleLogin} />
+              (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
+              <Login onLogin={handleLogin} onAdminLogin={handleAdminLogin} onGuestLogin={handleGuestLogin} />
             } 
           />
           <Route 
             path="/register" 
             element={
               isAuthenticated ? 
-              <Navigate to="/home" replace /> : 
+              (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
               <Register onRegister={handleLogin} />
             } 
           />
           <Route 
             path="/home" 
             element={
-              isAuthenticated ? 
+              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
               <HomeScreen user={user} onLogout={handleLogout} /> : 
               <Navigate to="/login" replace />
             } 
           />
           <Route 
-            path="/" 
+            path="/orders" 
             element={
-              isAuthenticated ? 
-              <Navigate to="/home" replace /> : 
+              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+              <div className="page-container">
+                <h1>Orders</h1>
+                <p>Your order history will appear here.</p>
+              </div> : 
+              <Navigate to="/login" replace />
+            } 
+          />
+          <Route 
+            path="/rewards" 
+            element={
+              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+              <div className="page-container">
+                <h1>Rewards</h1>
+                <p>Your rewards and points will appear here.</p>
+              </div> : 
+              <Navigate to="/login" replace />
+            } 
+          />
+          <Route 
+            path="/account" 
+            element={
+              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+              <div className="page-container">
+                <h1>My Account</h1>
+                <p>Your account settings will appear here.</p>
+              </div> : 
+              <Navigate to="/login" replace />
+            } 
+          />
+          <Route 
+            path="/cart" 
+            element={
+              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+              <div className="page-container">
+                <h1>Shopping Cart</h1>
+                <p>Your cart items will appear here.</p>
+              </div> : 
+              <Navigate to="/login" replace />
+            } 
+          />
+          <Route 
+            path="/admin" 
+            element={
+              isAuthenticated && userType === 'admin' ? 
+              <AdminHomeScreen admin={admin} onLogout={handleLogout} /> : 
               <Navigate to="/login" replace />
             } 
           />

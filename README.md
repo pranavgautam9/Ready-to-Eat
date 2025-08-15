@@ -110,6 +110,16 @@ The following test user is pre-loaded in the database:
 - Password: Password123!
 - Mobile: 9999999999
 
+## Admin Access
+
+The following admin account is pre-loaded in the database:
+- Username: admin
+- Password: Admin123!
+- Role: super_admin
+- Full Name: System Administrator
+
+**Note:** Admin users have access to the admin dashboard and can manage the system.
+
 ## Technologies Used
 
 - **Backend**: Python Flask
