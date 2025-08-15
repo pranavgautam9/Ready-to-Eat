@@ -130,6 +130,7 @@ const Login = ({ onLogin }) => {
         </form>
 
         <div className="auth-footer">
+          <p>Don't have an account?</p>
           <Link to="/register" className="link">
             Create Account
           </Link>
