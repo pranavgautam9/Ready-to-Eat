@@ -1,16 +1,24 @@
 /* SplashScreen styles */
 .splash-container {
-  background: var(--white);
+  background: var(--white) !important;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
 }
 
 .splash-content {
   text-align: center;
   animation: fadeIn 0.5s ease-in;
+  z-index: 2;
+  position: relative;
 }
 
 .splash-logo {

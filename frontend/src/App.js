@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import SplashScreen from './pages/SplashScreen';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -7,6 +7,104 @@ import HomeScreen from './pages/HomeScreen';
 import AdminHomeScreen from './pages/AdminHomeScreen';
 import Navigation from './components/Navigation';
 import './App.css';
+
+// Create a wrapper component to access location
+function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handleAdminLogin, handleGuestLogin, handleLogout }) {
+  const location = useLocation();
+  
+  // Don't show navigation on splash screen
+  const shouldShowNavigation = isAuthenticated && userType !== 'admin' && location.pathname !== '/';
+
+  return (
+    <div className="App">
+      {shouldShowNavigation && (
+        <Navigation cartItemCount={0} />
+      )}
+      <Routes>
+        <Route 
+          path="/" 
+          element={<SplashScreen />}
+        />
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? 
+            (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
+            <Login onLogin={handleLogin} onAdminLogin={handleAdminLogin} onGuestLogin={handleGuestLogin} />
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            isAuthenticated ? 
+            (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
+            <Register onRegister={handleLogin} />
+          } 
+        />
+        <Route 
+          path="/home" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <HomeScreen user={user} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/orders" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <div className="page-container">
+              <h1>Orders</h1>
+              <p>Your order history will appear here.</p>
+            </div> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/rewards" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <div className="page-container">
+              <h1>Rewards</h1>
+              <p>Your rewards and points will appear here.</p>
+            </div> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/account" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <div className="page-container">
+              <h1>My Account</h1>
+              <p>Your account settings will appear here.</p>
+            </div> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/cart" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <div className="page-container">
+              <h1>Shopping Cart</h1>
+              <p>Your cart items will appear here.</p>
+            </div> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/admin" 
+          element={
+            isAuthenticated && userType === 'admin' ? 
+            <AdminHomeScreen admin={admin} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+      </Routes>
+    </div>
+  );
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -103,93 +201,16 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        {isAuthenticated && userType !== 'admin' && (
-          <Navigation cartItemCount={0} />
-        )}
-        <Routes>
-          <Route 
-            path="/" 
-            element={<SplashScreen />}
-          />
-          <Route 
-            path="/login" 
-            element={
-              isAuthenticated ? 
-              (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
-              <Login onLogin={handleLogin} onAdminLogin={handleAdminLogin} onGuestLogin={handleGuestLogin} />
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              isAuthenticated ? 
-              (userType === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/home" replace />) : 
-              <Register onRegister={handleLogin} />
-            } 
-          />
-          <Route 
-            path="/home" 
-            element={
-              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-              <HomeScreen user={user} onLogout={handleLogout} /> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/orders" 
-            element={
-              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-              <div className="page-container">
-                <h1>Orders</h1>
-                <p>Your order history will appear here.</p>
-              </div> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/rewards" 
-            element={
-              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-              <div className="page-container">
-                <h1>Rewards</h1>
-                <p>Your rewards and points will appear here.</p>
-              </div> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/account" 
-            element={
-              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-              <div className="page-container">
-                <h1>My Account</h1>
-                <p>Your account settings will appear here.</p>
-              </div> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/cart" 
-            element={
-              isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-              <div className="page-container">
-                <h1>Shopping Cart</h1>
-                <p>Your cart items will appear here.</p>
-              </div> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-          <Route 
-            path="/admin" 
-            element={
-              isAuthenticated && userType === 'admin' ? 
-              <AdminHomeScreen admin={admin} onLogout={handleLogout} /> : 
-              <Navigate to="/login" replace />
-            } 
-          />
-        </Routes>
-      </div>
+      <AppContent 
+        isAuthenticated={isAuthenticated}
+        userType={userType}
+        user={user}
+        admin={admin}
+        handleLogin={handleLogin}
+        handleAdminLogin={handleAdminLogin}
+        handleGuestLogin={handleGuestLogin}
+        handleLogout={handleLogout}
+      />
     </Router>
   );
 }
