@@ -85,6 +85,24 @@
   transition: all 0.3s ease;
 }
 
+.logout-btn {
+  background: var(--primary-red);
+  color: var(--white);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #7a1228;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(155, 22, 49, 0.3);
+}
+
 .cart-badge {
   position: absolute;
   top: -8px;
@@ -129,6 +147,11 @@
   .nav-logo img {
     height: 40px;
   }
+  
+  .logout-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -147,5 +170,10 @@
   
   .nav-logo img {
     height: 35px;
+  }
+  
+  .logout-btn {
+    font-size: 12px;
+    padding: 4px 8px;
   }
 }

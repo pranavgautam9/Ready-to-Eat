@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session
-from models import db, User, Admin
+from models import db, User, Admin, Order, OrderItem, FoodItem
 from werkzeug.security import generate_password_hash
 import re
 import uuid
@@ -232,3 +232,175 @@ def get_admin_profile():
         return jsonify({'error': 'Admin not found'}), 404
     
     return jsonify({'admin': admin.to_dict()}), 200
+
+# Order-related endpoints
+@api.route('/orders', methods=['GET'])
+def get_orders():
+    """Get all orders for the current user"""
+    try:
+        user_id = session.get('user_id')
+        guest_id = session.get('guest_id')
+        user_type = session.get('user_type')
+        
+        if user_type == 'guest' and guest_id:
+            # For guest users, we'll return empty orders for now
+            # In a real app, you might want to store guest orders temporarily
+            return jsonify({'orders': []}), 200
+        
+        elif user_type == 'user' and user_id:
+            # Get all orders for the authenticated user
+            orders = Order.query.filter_by(user_id=user_id).order_by(Order.order_time.desc()).all()
+            return jsonify({'orders': [order.to_dict() for order in orders]}), 200
+        
+        else:
+            return jsonify({'error': 'Not authenticated'}), 401
+            
+    except Exception as e:
+        print(f"Get orders error: {str(e)}")
+        return jsonify({'error': 'Failed to fetch orders'}), 500
+
+@api.route('/orders', methods=['POST'])
+def create_order():
+    """Create a new order"""
+    try:
+        user_id = session.get('user_id')
+        guest_id = session.get('guest_id')
+        user_type = session.get('user_type')
+        
+        if user_type not in ['user', 'guest']:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['items', 'total_amount', 'tax_amount', 'grand_total', 'points_earned', 'estimated_time', 'payment_method']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'{field.replace("_", " ").title()} is required'}), 400
+        
+        # Generate unique order number
+        order_number = f"ORD-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        
+        # For guest users, we'll use a temporary user_id
+        # In a real app, you might want to handle guest orders differently
+        actual_user_id = user_id if user_type == 'user' else 1  # Using test user for guests
+        
+        # Create the order
+        order = Order(
+            order_number=order_number,
+            user_id=actual_user_id,
+            total_amount=data['total_amount'],
+            tax_amount=data['tax_amount'],
+            grand_total=data['grand_total'],
+            points_earned=data['points_earned'],
+            estimated_time=data['estimated_time'],
+            payment_method=data['payment_method'],
+            payment_details=data.get('payment_details', {})
+        )
+        
+        db.session.add(order)
+        db.session.flush()  # Get the order ID
+        
+        # Create order items
+        for item in data['items']:
+            food_item = FoodItem.query.get(item['foodId'])
+            if not food_item:
+                return jsonify({'error': f'Food item with ID {item["foodId"]} not found'}), 400
+            
+            order_item = OrderItem(
+                order_id=order.id,
+                food_id=item['foodId'],
+                food_name=food_item.name,
+                food_price=food_item.price,
+                quantity=item['quantity'],
+                has_extra=item.get('hasExtra', False),
+                item_total=food_item.price * item['quantity']
+            )
+            db.session.add(order_item)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Order created successfully',
+            'order': order.to_dict()
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Create order error: {str(e)}")
+        return jsonify({'error': 'Failed to create order'}), 500
+
+@api.route('/orders/<int:order_id>', methods=['GET'])
+def get_order(order_id):
+    """Get a specific order by ID"""
+    try:
+        user_id = session.get('user_id')
+        guest_id = session.get('guest_id')
+        user_type = session.get('user_type')
+        
+        if user_type not in ['user', 'guest']:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        # For guest users, we'll use a temporary user_id
+        actual_user_id = user_id if user_type == 'user' else 1
+        
+        order = Order.query.filter_by(id=order_id, user_id=actual_user_id).first()
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+        
+        return jsonify({'order': order.to_dict()}), 200
+        
+    except Exception as e:
+        print(f"Get order error: {str(e)}")
+        return jsonify({'error': 'Failed to fetch order'}), 500
+
+@api.route('/orders/<int:order_id>/status', methods=['PUT'])
+def update_order_status(order_id):
+    """Update order status (for admin use)"""
+    try:
+        admin_id = session.get('admin_id')
+        user_type = session.get('user_type')
+        
+        if user_type != 'admin' or not admin_id:
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        data = request.get_json()
+        new_status = data.get('status')
+        
+        if new_status not in ['current', 'ready', 'completed']:
+            return jsonify({'error': 'Invalid status'}), 400
+        
+        order = Order.query.get(order_id)
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+        
+        order.status = new_status
+        
+        # Set timestamps based on status
+        if new_status == 'ready' and not order.ready_time:
+            order.ready_time = datetime.utcnow()
+        elif new_status == 'completed' and not order.completed_time:
+            order.completed_time = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Order status updated successfully',
+            'order': order.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update order status error: {str(e)}")
+        return jsonify({'error': 'Failed to update order status'}), 500
+
+@api.route('/food-items', methods=['GET'])
+def get_food_items():
+    """Get all available food items"""
+    try:
+        food_items = FoodItem.query.filter_by(is_available=True).all()
+        return jsonify({'food_items': [item.to_dict() for item in food_items]}), 200
+        
+    except Exception as e:
+        print(f"Get food items error: {str(e)}")
+        return jsonify({'error': 'Failed to fetch food items'}), 500
