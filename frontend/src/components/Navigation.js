@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
 import './Navigation.css';
 
-const Navigation = ({ cartItemCount = 0 }) => {
+const Navigation = ({ cartItemCount = 0, onLogout }) => {
   const location = useLocation();
 
   const isActive = (path) => {
@@ -50,6 +50,10 @@ const Navigation = ({ cartItemCount = 0 }) => {
               )}
             </div>
           </Link>
+          
+          <button className="nav-link logout-btn" onClick={onLogout}>
+            Sign Out
+          </button>
         </div>
       </div>
     </nav>

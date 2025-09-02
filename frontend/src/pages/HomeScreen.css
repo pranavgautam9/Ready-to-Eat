@@ -6,6 +6,40 @@
   margin-top: 70px; /* Account for fixed navigation */
 }
 
+.food-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.disclaimer {
+  text-align: left;
+  margin: 40px 0;
+  padding: 0;
+}
+
+.disclaimer p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
 .home-header {
   text-align: center;
   margin-bottom: 40px;
@@ -126,18 +160,13 @@
     font-size: 24px;
   }
   
-  .user-info {
-    padding: 20px;
-    margin: 20px 10px 20px 10px;
+  .section-title {
+    font-size: 28px;
   }
   
-  .user-details {
-    grid-template-columns: 1fr;
+  .food-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
-  }
-  
-  .user-detail {
-    padding: 16px;
   }
   
   .logo-text {

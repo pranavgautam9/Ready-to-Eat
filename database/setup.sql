@@ -44,7 +44,81 @@ VALUES (
     '9999999999'
 ) ON DUPLICATE KEY UPDATE id=id;
 
+-- Create orders table
+CREATE TABLE IF NOT EXISTS orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_number VARCHAR(20) UNIQUE NOT NULL,
+    user_id INT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    tax_amount DECIMAL(10,2) NOT NULL,
+    grand_total DECIMAL(10,2) NOT NULL,
+    points_earned INT NOT NULL,
+    estimated_time INT NOT NULL,
+    status ENUM('current', 'ready', 'completed') DEFAULT 'current',
+    payment_method VARCHAR(50),
+    payment_details JSON,
+    order_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ready_time DATETIME NULL,
+    completed_time DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create order_items table
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    food_id INT NOT NULL,
+    food_name VARCHAR(100) NOT NULL,
+    food_price DECIMAL(8,2) NOT NULL,
+    quantity INT NOT NULL,
+    has_extra BOOLEAN DEFAULT FALSE,
+    item_total DECIMAL(10,2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+
+-- Create food_items table for reference
+CREATE TABLE IF NOT EXISTS food_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(8,2) NOT NULL,
+    image_path VARCHAR(255),
+    has_extra_option BOOLEAN DEFAULT FALSE,
+    is_available BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Insert food items
+INSERT INTO food_items (id, name, price, image_path, has_extra_option) VALUES
+(1, 'Samosa', 15.00, 'Samosa.jpg', FALSE),
+(2, 'Kachori', 15.00, 'Kachori.jpg', FALSE),
+(3, 'Aloo Parantha', 30.00, 'Aloo Parantha.jpg', FALSE),
+(4, 'Pav Bhaji', 60.00, 'Pav Bhaji.jpg', FALSE),
+(5, 'Chole Bhature', 60.00, 'Chole Bhature.jpg', FALSE),
+(6, 'Veg Burger', 50.00, 'Veg Burger.jpg', FALSE),
+(7, 'Hakka Noodles', 40.00, 'Hakka Noodles.jpg', FALSE),
+(8, 'Manchurian', 60.00, 'Manchurian.jpg', FALSE),
+(9, 'Cup of Tea', 10.00, 'Tea.JPG', FALSE),
+(10, 'Cold Coffee', 20.00, 'Cold Coffee.jpg', FALSE),
+(11, 'Lays Chips', 20.00, 'Lays.jpg', FALSE),
+(12, 'Kurkure', 20.00, 'Kurkure.jpg', FALSE),
+(13, 'Coca Cola', 20.00, 'Coca Cola.jpg', FALSE),
+(14, 'Frooti', 15.00, 'Frooti.jpg', FALSE)
+ON DUPLICATE KEY UPDATE 
+    name = VALUES(name),
+    price = VALUES(price),
+    image_path = VALUES(image_path),
+    has_extra_option = VALUES(has_extra_option);
+
 -- Create indexes for better performance
 CREATE INDEX idx_email ON users(email);
 CREATE INDEX idx_created_at ON users(created_at);
 CREATE INDEX idx_admin_username ON admins(username);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_order_time ON orders(order_time);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_food_items_available ON food_items(is_available);

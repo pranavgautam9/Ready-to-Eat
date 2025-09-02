@@ -5,11 +5,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import HomeScreen from './pages/HomeScreen';
 import AdminHomeScreen from './pages/AdminHomeScreen';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Orders from './pages/Orders';
 import Navigation from './components/Navigation';
 import './App.css';
 
 // Create a wrapper component to access location
-function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handleAdminLogin, handleGuestLogin, handleLogout }) {
+function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handleAdminLogin, handleGuestLogin, handleLogout, cartItemCount, setCartItemCount, cart, onUpdateCart }) {
   const location = useLocation();
   
   // Don't show navigation on splash screen
@@ -18,7 +21,7 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
   return (
     <div className="App">
       {shouldShowNavigation && (
-        <Navigation cartItemCount={0} />
+        <Navigation cartItemCount={cartItemCount} onLogout={handleLogout} />
       )}
       <Routes>
         <Route 
@@ -45,7 +48,7 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/home" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <HomeScreen user={user} onLogout={handleLogout} /> : 
+            <HomeScreen user={user} onLogout={handleLogout} onCartUpdate={setCartItemCount} cart={cart} onUpdateCart={onUpdateCart} /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -86,10 +89,23 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/cart" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>Shopping Cart</h1>
-              <p>Your cart items will appear here.</p>
-            </div> : 
+            <Cart cart={cart} onUpdateCart={onUpdateCart} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/checkout" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <Checkout cart={cart} onUpdateCart={onUpdateCart} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/orders" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <Orders /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -112,6 +128,8 @@ function App() {
   const [admin, setAdmin] = useState(null);
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [cart, setCart] = useState({});
 
   useEffect(() => {
     // Check if user is already logged in
@@ -184,7 +202,12 @@ function App() {
       setAdmin(null);
       setUserType(null);
       setIsAuthenticated(false);
+      setCart({}); // Clear cart on logout
     }
+  };
+
+  const handleUpdateCart = (newCart) => {
+    setCart(newCart);
   };
 
   if (loading) {
@@ -210,6 +233,10 @@ function App() {
         handleAdminLogin={handleAdminLogin}
         handleGuestLogin={handleGuestLogin}
         handleLogout={handleLogout}
+        cartItemCount={cartItemCount}
+        setCartItemCount={setCartItemCount}
+        cart={cart}
+        onUpdateCart={handleUpdateCart}
       />
     </Router>
   );
