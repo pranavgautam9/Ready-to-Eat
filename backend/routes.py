@@ -394,6 +394,59 @@ def update_order_status(order_id):
         print(f"Update order status error: {str(e)}")
         return jsonify({'error': 'Failed to update order status'}), 500
 
+@api.route('/orders/update-status', methods=['POST'])
+def update_order_statuses():
+    """Update order statuses based on time (can be called by frontend or scheduled job)"""
+    try:
+        current_time = datetime.utcnow()
+        updated_orders = []
+        
+        # Get all current orders
+        current_orders = Order.query.filter_by(status='current').all()
+        
+        for order in current_orders:
+            order_time = order.order_time
+            elapsed_minutes = (current_time - order_time).total_seconds() / 60
+            
+            # If elapsed time >= estimated time, mark as ready
+            if elapsed_minutes >= order.estimated_time:
+                order.status = 'ready'
+                if not order.ready_time:
+                    order.ready_time = current_time
+                order.updated_at = current_time
+                updated_orders.append(order.id)
+        
+        # Get all ready orders that should become past orders (1 hour after ready)
+        ready_orders = Order.query.filter_by(status='ready').all()
+        
+        for order in ready_orders:
+            if order.ready_time:
+                time_since_ready = (current_time - order.ready_time).total_seconds() / 60
+                # Move to past orders after 1 hour of being ready
+                if time_since_ready >= 60:
+                    order.status = 'completed'
+                    if not order.completed_time:
+                        order.completed_time = current_time
+                    order.updated_at = current_time
+                    updated_orders.append(order.id)
+        
+        if updated_orders:
+            db.session.commit()
+            return jsonify({
+                'message': f'Updated {len(updated_orders)} orders',
+                'updated_order_ids': updated_orders
+            }), 200
+        else:
+            return jsonify({
+                'message': 'No orders needed updating',
+                'updated_order_ids': []
+            }), 200
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update order statuses error: {str(e)}")
+        return jsonify({'error': 'Failed to update order statuses'}), 500
+
 @api.route('/food-items', methods=['GET'])
 def get_food_items():
     """Get all available food items"""

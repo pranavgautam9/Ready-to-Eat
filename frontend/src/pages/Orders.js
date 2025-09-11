@@ -16,59 +16,60 @@ const Orders = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Function to fetch orders from API
+  const fetchOrders = async () => {
+    try {
+      console.log('🔍 Fetching orders from API...');
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'GET',
+        credentials: 'include', // Include cookies for session
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📦 Orders data received:', data);
+        
+        // Convert API data to frontend format
+        const formattedOrders = data.orders.map(order => ({
+          id: order.id,
+          orderNumber: order.order_number,
+          items: order.order_items.map(item => ({
+            foodId: item.food_id,
+            quantity: item.quantity,
+            hasExtra: item.has_extra
+          })),
+          total: order.total_amount,
+          tax: order.tax_amount,
+          grandTotal: order.grand_total,
+          points: order.points_earned,
+          orderTime: new Date(order.order_time),
+          estimatedTime: order.estimated_time,
+          status: order.status === 'completed' ? 'past' : order.status
+        }));
+        
+        console.log('✨ Formatted orders:', formattedOrders);
+        setOrders(formattedOrders);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Failed to fetch orders:', response.status, errorText);
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error('💥 Error fetching orders:', error);
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load orders from API
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        console.log('🔍 Fetching orders from API...');
-        const response = await fetch('http://localhost:5000/api/orders', {
-          method: 'GET',
-          credentials: 'include', // Include cookies for session
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        console.log('📡 Response status:', response.status);
-        console.log('📡 Response ok:', response.ok);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('📦 Orders data received:', data);
-          
-          // Convert API data to frontend format
-          const formattedOrders = data.orders.map(order => ({
-            id: order.id,
-            orderNumber: order.order_number,
-            items: order.order_items.map(item => ({
-              foodId: item.food_id,
-              quantity: item.quantity,
-              hasExtra: item.has_extra
-            })),
-            total: order.total_amount,
-            tax: order.tax_amount,
-            grandTotal: order.grand_total,
-            points: order.points_earned,
-            orderTime: new Date(order.order_time),
-            estimatedTime: order.estimated_time,
-            status: order.status === 'completed' ? 'past' : order.status
-          }));
-          
-          console.log('✨ Formatted orders:', formattedOrders);
-          setOrders(formattedOrders);
-        } else {
-          const errorText = await response.text();
-          console.error('❌ Failed to fetch orders:', response.status, errorText);
-          setOrders([]);
-        }
-      } catch (error) {
-        console.error('💥 Error fetching orders:', error);
-        setOrders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
   }, []);
 
@@ -102,7 +103,40 @@ const Orders = () => {
   const currentOrders = orders.filter(order => order.status === 'current' || order.status === 'ready');
   const pastOrders = orders.filter(order => order.status === 'past' || order.status === 'completed');
 
-  // Update order status when time expires
+  // Update order statuses in database every 30 seconds
+  useEffect(() => {
+    const updateOrderStatuses = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/orders/update-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.updated_order_ids && result.updated_order_ids.length > 0) {
+            // Refresh orders from database if any were updated
+            fetchOrders();
+          }
+        }
+      } catch (error) {
+        console.error('Error updating order statuses:', error);
+      }
+    };
+
+    // Call the status update endpoint every 30 seconds
+    const interval = setInterval(updateOrderStatuses, 30000);
+    
+    // Also call it immediately
+    updateOrderStatuses();
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update order status when time expires (for UI display)
   useEffect(() => {
     setOrders(prevOrders => 
       prevOrders.map(order => {
