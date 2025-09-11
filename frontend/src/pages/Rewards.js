@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { foodItems } from '../data/foodItems';
 import './Rewards.css';
 
-const Rewards = ({ cart, onUpdateCart, onCartUpdate }) => {
+const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [redeemedReward, setRedeemedReward] = useState(null);
@@ -222,6 +222,112 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate }) => {
         <div className="rewards-content">
           <div style={{color: 'white', textAlign: 'center', fontSize: '20px'}}>
             <p>Loading your rewards...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message for guest users
+  if (userType === 'guest') {
+    return (
+      <div className="rewards-container" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #05288D 0%, #9B1631 100%)',
+        padding: '20px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingTop: '120px',
+        marginTop: '70px'
+      }}>
+        <div className="rewards-content" style={{
+          width: '100%',
+          maxWidth: '600px',
+          margin: '0 auto',
+          textAlign: 'center',
+          background: 'white',
+          borderRadius: '16px',
+          padding: '40px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+        }}>
+          <div style={{
+            fontSize: '48px',
+            marginBottom: '20px'
+          }}>
+            🎁
+          </div>
+          <h1 style={{
+            fontSize: '32px',
+            fontWeight: '700',
+            color: '#1f2937',
+            marginBottom: '16px'
+          }}>
+            Rewards Not Available
+          </h1>
+          <p style={{
+            fontSize: '18px',
+            color: '#6b7280',
+            marginBottom: '32px',
+            lineHeight: '1.6'
+          }}>
+            You need to create an account to access rewards and earn points with your orders.
+          </p>
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <button
+              onClick={() => window.location.href = '/register'}
+              style={{
+                background: 'linear-gradient(135deg, #05288D, #9B1631)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 12px rgba(5, 40, 141, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 8px 24px rgba(5, 40, 141, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 12px rgba(5, 40, 141, 0.3)';
+              }}
+            >
+              Create Account
+            </button>
+            <button
+              onClick={() => window.location.href = '/login'}
+              style={{
+                background: '#f3f4f6',
+                color: '#374151',
+                border: '2px solid #d1d5db',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = '#e5e7eb';
+                e.target.style.transform = 'translateY(-1px)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = '#f3f4f6';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              Sign In
+            </button>
           </div>
         </div>
       </div>

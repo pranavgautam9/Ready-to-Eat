@@ -70,7 +70,7 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/rewards"
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <Rewards cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} /> : 
+            <Rewards cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} userType={userType} /> : 
             <Navigate to="/login" replace />
           } 
         />

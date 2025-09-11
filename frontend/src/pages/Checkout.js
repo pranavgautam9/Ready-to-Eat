@@ -58,7 +58,7 @@ const Checkout = ({ cart, onUpdateCart }) => {
     });
 
     const tax = subtotal * 0.15; // 15% tax
-    const total = subtotal + tax;
+    const total = Math.floor(subtotal + tax); // Round down to nearest rupee
     const points = Math.floor(subtotal / 10); // 1 point for every ₹10 spent (excluding tax)
 
     return { cartItems, subtotal, tax, total, points };

@@ -162,7 +162,17 @@
   position: absolute;
   top: 50%;
   left: 0;
+  width: calc(50% - 30px);
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
   right: 0;
+  width: calc(50% - 30px);
   height: 1px;
   background: var(--gray-200);
 }
