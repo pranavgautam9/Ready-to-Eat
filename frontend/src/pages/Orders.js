@@ -5,6 +5,7 @@ import './Orders.css';
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [loading, setLoading] = useState(true);
 
   // Update current time every minute for countdown
   useEffect(() => {
@@ -19,6 +20,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        console.log('🔍 Fetching orders from API...');
         const response = await fetch('http://localhost:5000/api/orders', {
           method: 'GET',
           credentials: 'include', // Include cookies for session
@@ -27,8 +29,13 @@ const Orders = () => {
           },
         });
 
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
         if (response.ok) {
           const data = await response.json();
+          console.log('📦 Orders data received:', data);
+          
           // Convert API data to frontend format
           const formattedOrders = data.orders.map(order => ({
             id: order.id,
@@ -44,18 +51,21 @@ const Orders = () => {
             points: order.points_earned,
             orderTime: new Date(order.order_time),
             estimatedTime: order.estimated_time,
-            status: order.status === 'completed' ? 'past' : 'current'
+            status: order.status === 'completed' ? 'past' : order.status
           }));
+          
+          console.log('✨ Formatted orders:', formattedOrders);
           setOrders(formattedOrders);
         } else {
-          console.error('Failed to fetch orders:', response.statusText);
-          // Fallback to empty array if API fails
+          const errorText = await response.text();
+          console.error('❌ Failed to fetch orders:', response.status, errorText);
           setOrders([]);
         }
       } catch (error) {
-        console.error('Error fetching orders:', error);
-        // Fallback to empty array if API fails
+        console.error('💥 Error fetching orders:', error);
         setOrders([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -69,10 +79,18 @@ const Orders = () => {
     const elapsedMinutes = Math.floor((now - orderTime) / 60000);
     const remainingMinutes = order.estimatedTime - elapsedMinutes;
 
-    if (remainingMinutes <= 0) {
+    // If order is ready or time has passed, show ready message
+    if (order.status === 'ready' || remainingMinutes <= 0) {
       return 'Your order is ready!';
     }
-    return `${remainingMinutes} minutes`;
+    
+    // Calculate ready time
+    const readyTime = new Date(orderTime.getTime() + (order.estimatedTime * 60000));
+    return `Your order will be ready at - ${readyTime.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    })}`;
   };
 
   // Get food item details
@@ -81,8 +99,8 @@ const Orders = () => {
   };
 
   // Separate current and past orders
-  const currentOrders = orders.filter(order => order.status === 'current');
-  const pastOrders = orders.filter(order => order.status === 'past');
+  const currentOrders = orders.filter(order => order.status === 'current' || order.status === 'ready');
+  const pastOrders = orders.filter(order => order.status === 'past' || order.status === 'completed');
 
   // Update order status when time expires
   useEffect(() => {
@@ -93,21 +111,48 @@ const Orders = () => {
           const orderTime = new Date(order.orderTime);
           const elapsedMinutes = Math.floor((now - orderTime) / 60000);
           
+          // Change to ready when estimated time is reached
+          if (elapsedMinutes >= order.estimatedTime) {
+            return { ...order, status: 'ready' };
+          }
+          
           // Move to past orders after estimated time + 1 hour
           if (elapsedMinutes >= order.estimatedTime + 60) {
             return { ...order, status: 'past' };
           }
         }
+        
+        if (order.status === 'ready') {
+          const now = currentTime;
+          const orderTime = new Date(order.orderTime);
+          const elapsedMinutes = Math.floor((now - orderTime) / 60000);
+          
+          // Move to past orders after estimated time + 1 hour
+          if (elapsedMinutes >= order.estimatedTime + 60) {
+            return { ...order, status: 'past' };
+          }
+        }
+        
         return order;
       })
     );
   }, [currentTime]);
 
+  if (loading) {
+    return (
+      <div className="orders-container">
+        <div className="orders-content">
+          <div style={{color: 'white', textAlign: 'center', fontSize: '20px'}}>
+            <p>Loading your orders...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="orders-container">
       <div className="orders-content">
-        <h1 className="orders-title">Your Orders</h1>
-
         {/* Current Orders */}
         {currentOrders.length > 0 && (
           <div className="orders-section">
@@ -119,56 +164,36 @@ const Orders = () => {
                     <div className="order-info">
                       <h3 className="order-number">{order.orderNumber}</h3>
                       <p className="order-time">
-                        Ordered at {order.orderTime.toLocaleTimeString([], { 
+                        Ordered on {order.orderTime.toLocaleDateString()} at {order.orderTime.toLocaleTimeString([], { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
                       </p>
                     </div>
                     <div className="order-status">
-                      <span className="status-badge current">
+                      <span className={`status-badge ${order.status === 'ready' ? 'ready' : 'current'}`}>
                         {calculateRemainingTime(order)}
                       </span>
                     </div>
                   </div>
 
                   <div className="order-items">
-                    <h4>Items Ordered:</h4>
                     <div className="items-list">
                       {order.items.map((item, index) => {
                         const foodItem = getFoodItem(item.foodId);
                         return (
                           <div key={index} className="order-item">
-                            <div className="item-details">
-                              <span className="item-name">{foodItem?.name}</span>
-                              <span className="item-quantity">Qty: {item.quantity}</span>
-                            </div>
-                            <span className="item-price">
-                              ₹{(foodItem?.price * item.quantity).toFixed(2)}
-                            </span>
+                            <span className="item-name">{foodItem?.name || 'Unknown Item'}</span>
+                            <span className="item-quantity">Qty: {item.quantity}</span>
                           </div>
                         );
                       })}
                     </div>
-                  </div>
-
-                  <div className="order-summary">
-                    <div className="summary-row">
-                      <span>Subtotal:</span>
-                      <span>₹{order.total.toFixed(2)}</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Tax (15%):</span>
-                      <span>₹{order.tax.toFixed(2)}</span>
-                    </div>
-                    <div className="summary-row total">
-                      <span>Total:</span>
-                      <span>₹{order.grandTotal.toFixed(2)}</span>
-                    </div>
-                    <div className="points-earned">
+                    <div className="order-points">
                       <span>Points Earned: {order.points}</span>
                     </div>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -186,10 +211,10 @@ const Orders = () => {
                     <div className="order-info">
                       <h3 className="order-number">{order.orderNumber}</h3>
                       <p className="order-time">
-                        Ordered at {order.orderTime.toLocaleTimeString([], { 
+                        Ordered on {order.orderTime.toLocaleDateString()} at {order.orderTime.toLocaleTimeString([], { 
                           hour: '2-digit', 
                           minute: '2-digit' 
-                        })} on {order.orderTime.toLocaleDateString()}
+                        })}
                       </p>
                     </div>
                     <div className="order-status">
@@ -198,42 +223,22 @@ const Orders = () => {
                   </div>
 
                   <div className="order-items">
-                    <h4>Items Ordered:</h4>
                     <div className="items-list">
                       {order.items.map((item, index) => {
                         const foodItem = getFoodItem(item.foodId);
                         return (
                           <div key={index} className="order-item">
-                            <div className="item-details">
-                              <span className="item-name">{foodItem?.name}</span>
-                              <span className="item-quantity">Qty: {item.quantity}</span>
-                            </div>
-                            <span className="item-price">
-                              ₹{(foodItem?.price * item.quantity).toFixed(2)}
-                            </span>
+                            <span className="item-name">{foodItem?.name || 'Unknown Item'}</span>
+                            <span className="item-quantity">Qty: {item.quantity}</span>
                           </div>
                         );
                       })}
                     </div>
-                  </div>
-
-                  <div className="order-summary">
-                    <div className="summary-row">
-                      <span>Subtotal:</span>
-                      <span>₹{order.total.toFixed(2)}</span>
-                    </div>
-                    <div className="summary-row">
-                      <span>Tax (15%):</span>
-                      <span>₹{order.tax.toFixed(2)}</span>
-                    </div>
-                    <div className="summary-row total">
-                      <span>Total:</span>
-                      <span>₹{order.grandTotal.toFixed(2)}</span>
-                    </div>
-                    <div className="points-earned">
+                    <div className="order-points">
                       <span>Points Earned: {order.points}</span>
                     </div>
                   </div>
+
                 </div>
               ))}
             </div>

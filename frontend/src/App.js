@@ -15,6 +15,9 @@ import './App.css';
 function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handleAdminLogin, handleGuestLogin, handleLogout, cartItemCount, setCartItemCount, cart, onUpdateCart }) {
   const location = useLocation();
   
+  console.log('📍 Current location:', location.pathname);
+  console.log('🔐 Auth state:', { isAuthenticated, userType });
+  
   // Don't show navigation on splash screen
   const shouldShowNavigation = isAuthenticated && userType !== 'admin' && location.pathname !== '/';
 
@@ -56,10 +59,7 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/orders" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>Orders</h1>
-              <p>Your order history will appear here.</p>
-            </div> : 
+            <Orders /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -103,11 +103,15 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
         />
         <Route 
           path="/orders" 
-          element={
-            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <Orders /> : 
-            <Navigate to="/login" replace />
-          } 
+          element={<div style={{padding: '20px', background: 'red', color: 'white', fontSize: '30px'}}><h1>🚨 ORDERS ROUTE WORKS!</h1></div>} 
+        />
+        <Route 
+          path="/test-orders" 
+          element={<div style={{padding: '20px', background: 'blue', color: 'white', fontSize: '30px'}}><h1>🧪 TEST ORDERS ROUTE!</h1></div>} 
+        />
+        <Route 
+          path="*" 
+          element={<div style={{padding: '20px', background: 'yellow', color: 'black', fontSize: '30px'}}><h1>🚨 CATCH-ALL ROUTE: {location.pathname}</h1></div>} 
         />
         <Route 
           path="/admin" 
@@ -138,7 +142,7 @@ function App() {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/api/user/profile', {
+      const response = await fetch('http://localhost:5000/api/user/profile', {
         credentials: 'include'
       });
       
@@ -191,7 +195,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', {
+      await fetch('http://localhost:5000/api/logout', {
         method: 'POST',
         credentials: 'include'
       });
