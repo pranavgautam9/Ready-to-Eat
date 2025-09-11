@@ -43,18 +43,7 @@ VALUES (
     'testuser@gmail.com', 
     'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
     '9999999999',
-    1000
-) ON DUPLICATE KEY UPDATE id=id;
-
--- Insert additional test user with points (password: Password123!)
-INSERT INTO users (first_name, last_name, email, password_hash, mobile, points) 
-VALUES (
-    'Pranav', 
-    'Gautam', 
-    'pranavgautam27@gmail.com', 
-    'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
-    '9876543210',
-    1000
+    0
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Create orders table
@@ -132,28 +121,6 @@ ON DUPLICATE KEY UPDATE
     price = VALUES(price),
     image_path = VALUES(image_path),
     has_extra_option = VALUES(has_extra_option);
-
--- Insert sample orders with points
-INSERT INTO orders (order_number, user_id, total_amount, tax_amount, grand_total, points_earned, estimated_time, status, payment_method, payment_details, order_time) VALUES
-('ORD-20241201-ABC123', 1, 100.00, 15.00, 115.00, 10, 20, 'current', 'paytm', '{"paytmNumber": "9876543210"}', '2025-09-02 15:42:12'),
-('ORD-20241201-DEF456', 1, 85.00, 12.75, 97.75, 8, 20, 'ready', 'gpay', '{"gpayUpi": "user@okhdfcbank"}', '2025-09-02 15:28:04'),
-('ORD-20241201-GHI789', 4, 150.00, 22.50, 172.50, 15, 30, 'completed', 'cash', '{"cashOnPickup": true}', '2025-09-01 14:30:00')
-ON DUPLICATE KEY UPDATE order_number = order_number;
-
--- Insert sample order items
-INSERT INTO order_items (order_id, food_id, food_name, food_price, quantity, has_extra, item_total) VALUES
-(1, 1, 'Samosa', 15.00, 2, FALSE, 30.00),
-(1, 6, 'Veg Burger', 50.00, 1, FALSE, 50.00),
-(1, 10, 'Cold Coffee', 20.00, 1, FALSE, 20.00),
-(2, 2, 'Kachori', 15.00, 2, FALSE, 30.00),
-(2, 7, 'Hakka Noodles', 40.00, 1, FALSE, 40.00),
-(2, 9, 'Cup of Tea', 10.00, 1, FALSE, 10.00),
-(2, 11, 'Lays Chips', 20.00, 1, FALSE, 20.00),
-(3, 4, 'Pav Bhaji', 60.00, 1, FALSE, 60.00),
-(3, 5, 'Chole Bhature', 60.00, 1, FALSE, 60.00),
-(3, 13, 'Coca Cola', 20.00, 1, FALSE, 20.00),
-(3, 14, 'Frooti', 15.00, 1, FALSE, 15.00)
-ON DUPLICATE KEY UPDATE order_id = order_id;
 
 -- Create indexes for better performance
 CREATE INDEX idx_email ON users(email);
