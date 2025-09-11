@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(120) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     mobile VARCHAR(15) NOT NULL,
+    points INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -35,13 +36,25 @@ VALUES (
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Insert test user (password: Password123!)
-INSERT INTO users (first_name, last_name, email, password_hash, mobile) 
+INSERT INTO users (first_name, last_name, email, password_hash, mobile, points) 
 VALUES (
     'Test', 
     'User', 
     'testuser@gmail.com', 
     'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
-    '9999999999'
+    '9999999999',
+    1000
+) ON DUPLICATE KEY UPDATE id=id;
+
+-- Insert additional test user with points (password: Password123!)
+INSERT INTO users (first_name, last_name, email, password_hash, mobile, points) 
+VALUES (
+    'Pranav', 
+    'Gautam', 
+    'pranavgautam27@gmail.com', 
+    'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
+    '9876543210',
+    1000
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Create orders table
@@ -106,12 +119,41 @@ INSERT INTO food_items (id, name, price, image_path, has_extra_option) VALUES
 (11, 'Lays Chips', 20.00, 'Lays.jpg', FALSE),
 (12, 'Kurkure', 20.00, 'Kurkure.jpg', FALSE),
 (13, 'Coca Cola', 20.00, 'Coca Cola.jpg', FALSE),
-(14, 'Frooti', 15.00, 'Frooti.jpg', FALSE)
+(14, 'Frooti', 15.00, 'Frooti.jpg', FALSE),
+-- Reward items (IDs 101-106)
+(101, 'Samosa (Reward)', 0.00, 'samosa-reward.jpg', FALSE),
+(102, 'Kachori (Reward)', 0.00, 'kachori-reward.jpg', FALSE),
+(103, 'Veg Burger (Reward)', 0.00, 'veg-burger-reward.jpg', FALSE),
+(104, 'Hakka Noodles (Reward)', 0.00, 'hakka-noodles-reward.jpg', FALSE),
+(105, 'Pav Bhaji + Lays + Coca Cola (Reward)', 0.00, 'combo1-reward.jpg', FALSE),
+(106, 'Chole Bhature + Kurkure + Frooti (Reward)', 0.00, 'combo2-reward.jpg', FALSE)
 ON DUPLICATE KEY UPDATE 
     name = VALUES(name),
     price = VALUES(price),
     image_path = VALUES(image_path),
     has_extra_option = VALUES(has_extra_option);
+
+-- Insert sample orders with points
+INSERT INTO orders (order_number, user_id, total_amount, tax_amount, grand_total, points_earned, estimated_time, status, payment_method, payment_details, order_time) VALUES
+('ORD-20241201-ABC123', 1, 100.00, 15.00, 115.00, 10, 20, 'current', 'paytm', '{"paytmNumber": "9876543210"}', '2025-09-02 15:42:12'),
+('ORD-20241201-DEF456', 1, 85.00, 12.75, 97.75, 8, 20, 'ready', 'gpay', '{"gpayUpi": "user@okhdfcbank"}', '2025-09-02 15:28:04'),
+('ORD-20241201-GHI789', 4, 150.00, 22.50, 172.50, 15, 30, 'completed', 'cash', '{"cashOnPickup": true}', '2025-09-01 14:30:00')
+ON DUPLICATE KEY UPDATE order_number = order_number;
+
+-- Insert sample order items
+INSERT INTO order_items (order_id, food_id, food_name, food_price, quantity, has_extra, item_total) VALUES
+(1, 1, 'Samosa', 15.00, 2, FALSE, 30.00),
+(1, 6, 'Veg Burger', 50.00, 1, FALSE, 50.00),
+(1, 10, 'Cold Coffee', 20.00, 1, FALSE, 20.00),
+(2, 2, 'Kachori', 15.00, 2, FALSE, 30.00),
+(2, 7, 'Hakka Noodles', 40.00, 1, FALSE, 40.00),
+(2, 9, 'Cup of Tea', 10.00, 1, FALSE, 10.00),
+(2, 11, 'Lays Chips', 20.00, 1, FALSE, 20.00),
+(3, 4, 'Pav Bhaji', 60.00, 1, FALSE, 60.00),
+(3, 5, 'Chole Bhature', 60.00, 1, FALSE, 60.00),
+(3, 13, 'Coca Cola', 20.00, 1, FALSE, 20.00),
+(3, 14, 'Frooti', 15.00, 1, FALSE, 15.00)
+ON DUPLICATE KEY UPDATE order_id = order_id;
 
 -- Create indexes for better performance
 CREATE INDEX idx_email ON users(email);
@@ -122,3 +164,4 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_order_time ON orders(order_time);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_food_items_available ON food_items(is_available);
+CREATE INDEX idx_users_points ON users(points);

@@ -447,6 +447,59 @@ def update_order_statuses():
         print(f"Update order statuses error: {str(e)}")
         return jsonify({'error': 'Failed to update order statuses'}), 500
 
+@api.route('/user/points', methods=['GET'])
+def get_user_points():
+    """Get total points for the current user"""
+    try:
+        user_id = session.get('user_id')
+        user_type = session.get('user_type')
+        
+        if user_type != 'user' or not user_id:
+            return jsonify({'error': 'Not authenticated as user'}), 401
+        
+        # Get user from database
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Return the points from the users table
+        return jsonify({'points': user.points or 0}), 200
+        
+    except Exception as e:
+        print(f"Error fetching user points: {str(e)}")
+        return jsonify({'error': f'Failed to fetch points: {str(e)}'}), 500
+
+@api.route('/user/points', methods=['PUT'])
+def update_user_points():
+    """Update user points (for reward redemption)"""
+    try:
+        user_id = session.get('user_id')
+        user_type = session.get('user_type')
+        
+        if user_type != 'user' or not user_id:
+            return jsonify({'error': 'Not authenticated as user'}), 401
+        
+        data = request.get_json()
+        new_points = data.get('points')
+        
+        if new_points is None or new_points < 0:
+            return jsonify({'error': 'Invalid points value'}), 400
+        
+        # Update user points in the database
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user.points = new_points
+        db.session.commit()
+        
+        return jsonify({'message': 'Points updated successfully', 'points': new_points}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update user points error: {str(e)}")
+        return jsonify({'error': 'Failed to update user points'}), 500
+
 @api.route('/food-items', methods=['GET'])
 def get_food_items():
     """Get all available food items"""

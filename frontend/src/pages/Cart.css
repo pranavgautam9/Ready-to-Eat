@@ -287,3 +287,58 @@
     padding: 14px 24px;
   }
 }
+
+/* Reward Item Styles */
+.reward-item {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px solid #22c55e;
+  border-radius: 12px;
+  position: relative;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.reward-item .item-name {
+  color: #166534;
+  font-weight: 600;
+  margin-left: 12px;
+  font-size: 24px;
+}
+
+.reward-item .item-price-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.reward-item .item-price {
+  color: #22c55e;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: right;
+}
+
+.reward-item .remove-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.reward-item .remove-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.reward-item .quantity {
+  font-size: 12px;
+  color: #166534;
+  font-weight: 500;
+}

@@ -8,6 +8,7 @@ import AdminHomeScreen from './pages/AdminHomeScreen';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Rewards from './pages/Rewards';
 import Navigation from './components/Navigation';
 import './App.css';
 
@@ -64,13 +65,10 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           } 
         />
         <Route 
-          path="/rewards" 
+          path="/rewards"
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>Rewards</h1>
-              <p>Your rewards and points will appear here.</p>
-            </div> : 
+            <Rewards cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -89,7 +87,7 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/cart" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <Cart cart={cart} onUpdateCart={onUpdateCart} /> : 
+            <Cart cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} /> : 
             <Navigate to="/login" replace />
           } 
         />
