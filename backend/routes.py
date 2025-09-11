@@ -500,6 +500,46 @@ def update_user_points():
         print(f"Update user points error: {str(e)}")
         return jsonify({'error': 'Failed to update user points'}), 500
 
+@api.route('/user/change-password', methods=['PUT'])
+def change_user_password():
+    """Change user password"""
+    try:
+        user_id = session.get('user_id')
+        user_type = session.get('user_type')
+        
+        if user_type != 'user' or not user_id:
+            return jsonify({'error': 'Not authenticated as user'}), 401
+        
+        data = request.get_json()
+        current_password = data.get('currentPassword')
+        new_password = data.get('newPassword')
+        
+        if not current_password or not new_password:
+            return jsonify({'error': 'Current password and new password are required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'error': 'New password must be at least 6 characters long'}), 400
+        
+        # Get user from database
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Verify current password
+        if not user.check_password(current_password):
+            return jsonify({'error': 'Current password is incorrect'}), 400
+        
+        # Update password
+        user.set_password(new_password)
+        db.session.commit()
+        
+        return jsonify({'message': 'Password changed successfully'}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Change password error: {str(e)}")
+        return jsonify({'error': f'Failed to change password: {str(e)}'}), 500
+
 @api.route('/food-items', methods=['GET'])
 def get_food_items():
     """Get all available food items"""

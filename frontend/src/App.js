@@ -9,6 +9,8 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Rewards from './pages/Rewards';
+import MyAccount from './pages/MyAccount';
+import ChangePassword from './pages/ChangePassword';
 import Navigation from './components/Navigation';
 import './App.css';
 
@@ -76,10 +78,15 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/account" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>My Account</h1>
-              <p>Your account settings will appear here.</p>
-            </div> : 
+            <MyAccount user={user} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/change-password" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <ChangePassword /> : 
             <Navigate to="/login" replace />
           } 
         />
