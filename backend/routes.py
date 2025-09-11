@@ -3,6 +3,7 @@ from models import db, User, Admin, Order, OrderItem, FoodItem
 from werkzeug.security import generate_password_hash
 import re
 import uuid
+import secrets
 from datetime import datetime, timedelta
 
 api = Blueprint('api', __name__)
@@ -539,6 +540,81 @@ def change_user_password():
         db.session.rollback()
         print(f"Change password error: {str(e)}")
         return jsonify({'error': f'Failed to change password: {str(e)}'}), 500
+
+@api.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    """Send password reset email"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        if not validate_email(email):
+            return jsonify({'error': 'Invalid email format'}), 400
+        
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            # Don't reveal if email exists or not for security
+            return jsonify({'message': 'If an account with this email exists, a password reset link has been sent'}), 200
+        
+        # Generate reset token
+        reset_token = secrets.token_urlsafe(32)
+        reset_token_expires = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+        
+        # Save reset token to user
+        user.reset_token = reset_token
+        user.reset_token_expires = reset_token_expires
+        db.session.commit()
+        
+        # In a real application, you would send an email here
+        # For now, we'll just return the token in the response for testing
+        print(f"Password reset token for {email}: {reset_token}")
+        print(f"Reset link: http://localhost:3000/reset-password?token={reset_token}")
+        
+        return jsonify({
+            'message': 'If an account with this email exists, a password reset link has been sent',
+            'reset_token': reset_token  # Remove this in production
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Forgot password error: {str(e)}")
+        return jsonify({'error': f'Failed to process password reset request: {str(e)}'}), 500
+
+@api.route('/reset-password', methods=['POST'])
+def reset_password():
+    """Reset password using token"""
+    try:
+        data = request.get_json()
+        token = data.get('token')
+        new_password = data.get('newPassword')
+        
+        if not token or not new_password:
+            return jsonify({'error': 'Token and new password are required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'error': 'New password must be at least 6 characters long'}), 400
+        
+        # Find user with valid token
+        user = User.query.filter_by(reset_token=token).first()
+        if not user or user.reset_token_expires < datetime.utcnow():
+            return jsonify({'error': 'Invalid or expired reset token'}), 400
+        
+        # Update password and clear reset token
+        user.set_password(new_password)
+        user.reset_token = None
+        user.reset_token_expires = None
+        db.session.commit()
+        
+        return jsonify({'message': 'Password reset successfully'}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Reset password error: {str(e)}")
+        return jsonify({'error': f'Failed to reset password: {str(e)}'}), 500
 
 @api.route('/food-items', methods=['GET'])
 def get_food_items():

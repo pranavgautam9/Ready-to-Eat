@@ -87,7 +87,7 @@
 }
 
 .change-password-btn {
-  background: #ef4444;
+  background: var(--primary-red);
   color: var(--white);
   border: none;
   padding: 12px 24px;
@@ -96,13 +96,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 12px rgba(155, 22, 49, 0.3);
 }
 
 .change-password-btn:hover {
-  background: #dc2626;
+  background: #7c0a02;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 8px 24px rgba(155, 22, 49, 0.4);
 }
 
 .change-password-section {

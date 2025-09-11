@@ -69,6 +69,15 @@
   box-shadow: var(--shadow);
 }
 
+/* Override any gradient styles for login buttons */
+.btn-primary {
+  background: var(--primary-red) !important;
+}
+
+.btn-primary:hover {
+  background: #7c0a02 !important;
+}
+
 .error-message {
   background: rgba(220, 38, 38, 0.1);
   border: 1px solid rgba(220, 38, 38, 0.2);

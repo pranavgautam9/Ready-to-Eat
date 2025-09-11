@@ -11,6 +11,8 @@ import Orders from './pages/Orders';
 import Rewards from './pages/Rewards';
 import MyAccount from './pages/MyAccount';
 import ChangePassword from './pages/ChangePassword';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Navigation from './components/Navigation';
 import './App.css';
 
@@ -89,6 +91,14 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
             <ChangePassword /> : 
             <Navigate to="/login" replace />
           } 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={<ForgotPassword />} 
+        />
+        <Route 
+          path="/reset-password" 
+          element={<ResetPassword />} 
         />
         <Route 
           path="/cart" 

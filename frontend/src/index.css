@@ -55,13 +55,14 @@ code {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
+  background: var(--primary-red) !important;
   color: var(--white);
 }
 
 .btn-primary:hover {
+  background: #7c0a02 !important;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 24px rgba(155, 22, 49, 0.4);
 }
 
 .btn-secondary {

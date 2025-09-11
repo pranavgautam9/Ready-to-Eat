@@ -15,6 +15,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     mobile = db.Column(db.String(15), nullable=False)
     points = db.Column(db.Integer, default=0)
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expires = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

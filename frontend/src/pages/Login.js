@@ -125,8 +125,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
   };
 
   const handleForgotPassword = () => {
-    // TODO: Implement forgot password functionality
-    alert('Forgot password functionality will be implemented soon!');
+    navigate('/forgot-password');
   };
 
   return (
