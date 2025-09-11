@@ -198,7 +198,7 @@ const Orders = () => {
                     <div className="order-info">
                       <h3 className="order-number">{order.orderNumber}</h3>
                       <p className="order-time">
-                        Ordered on {order.orderTime.toLocaleDateString()} at {order.orderTime.toLocaleTimeString([], { 
+                        Ordered on {order.orderTime.toLocaleDateString('en-GB')} at {order.orderTime.toLocaleTimeString([], { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
@@ -245,7 +245,7 @@ const Orders = () => {
                     <div className="order-info">
                       <h3 className="order-number">{order.orderNumber}</h3>
                       <p className="order-time">
-                        Ordered on {order.orderTime.toLocaleDateString()} at {order.orderTime.toLocaleTimeString([], { 
+                        Ordered on {order.orderTime.toLocaleDateString('en-GB')} at {order.orderTime.toLocaleTimeString([], { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
