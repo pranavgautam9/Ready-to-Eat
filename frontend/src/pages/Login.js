@@ -276,6 +276,12 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
               </div>
             </div>
 
+            <div className="forgot-password">
+              <button type="button" onClick={handleForgotPassword}>
+                Forgot Password?
+              </button>
+            </div>
+
             {adminError && (
               <div className="error-message">
                 <span>⚠️</span>

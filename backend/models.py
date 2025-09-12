@@ -131,7 +131,7 @@ class Order(db.Model):
             'completed_time': self.completed_time.isoformat() if self.completed_time else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'order_items': [item.to_dict() for item in self.order_items]
+            'items': [item.to_dict() for item in self.order_items]
         }
 
 class OrderItem(db.Model):
@@ -152,7 +152,9 @@ class OrderItem(db.Model):
             'id': self.id,
             'order_id': self.order_id,
             'food_id': self.food_id,
+            'name': self.food_name,
             'food_name': self.food_name,
+            'price': float(self.food_price),
             'food_price': float(self.food_price),
             'quantity': self.quantity,
             'has_extra': self.has_extra,

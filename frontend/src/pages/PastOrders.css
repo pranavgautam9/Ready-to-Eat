@@ -1,22 +1,10 @@
-/* AdminHomeScreen page specific styles */
-.admin-home-container {
+/* PastOrders page specific styles */
+.past-orders-container {
   background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-red) 100%);
   min-height: 100vh;
-  padding: 40px 20px;
+  padding: 100px 20px 40px 20px;
 }
 
-
-.admin-info {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-/* Orders section styles */
 .orders-section {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -140,29 +128,22 @@
   letter-spacing: 0.5px;
 }
 
-.status-current {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.status-ready {
-  background: #d1fae5;
-  color: #059669;
-  animation: pulse 2s infinite;
-}
-
 .status-completed {
   background: #e5e7eb;
   color: #6b7280;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+.ready-time {
+  color: var(--text-light);
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.completed-time {
+  color: var(--text-light);
+  font-size: 14px;
+  margin: 4px 0;
+  font-weight: 600;
 }
 
 .order-items {
@@ -204,129 +185,72 @@
   font-size: 14px;
 }
 
-.order-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
-.status-btn {
-  padding: 8px 16px;
-  border: none;
+.order-summary {
+  background: var(--gray-50);
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 16px;
+  margin-top: 16px;
 }
 
-.ready-btn {
-  background: var(--primary-blue);
-  color: var(--white);
-}
-
-.ready-btn:hover {
-  background: #041f7a;
-  transform: translateY(-1px);
-}
-
-.completed-btn {
-  background: var(--primary-red);
-  color: var(--white);
-}
-
-.completed-btn:hover {
-  background: #7c0a02;
-  transform: translateY(-1px);
-}
-
-.no-action {
-  color: var(--text-light);
-  font-style: italic;
-  font-size: 14px;
-}
-
-.ready-time {
-  color: var(--text-light);
-  font-size: 14px;
-  margin: 4px 0;
-}
-
-.completed-time {
-  color: var(--text-light);
-  font-size: 12px;
-  margin-top: 8px;
-}
-
-.ready-time p,
-.completed-time p {
-  margin: 0;
-}
-
-.admin-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.admin-detail {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.admin-detail:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.admin-detail-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-light);
-  text-transform: uppercase;
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
-  letter-spacing: 0.5px;
 }
 
-.admin-detail-value {
-  font-size: 16px;
-  font-weight: 700;
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-row span:first-child {
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.summary-row span:last-child {
   color: var(--text-dark);
-  word-break: break-word;
+  font-weight: 600;
+  font-size: 16px;
 }
 
-
+/* Responsive design */
 @media (max-width: 768px) {
-  .admin-home-container {
-    padding: 20px 10px;
+  .past-orders-container {
+    padding: 100px 10px 20px 10px;
   }
   
-  
-  .admin-info {
+  .orders-section {
     padding: 20px;
     margin: 20px 10px 20px 10px;
   }
   
-  .admin-details {
-    grid-template-columns: 1fr;
+  .orders-header {
+    flex-direction: column;
     gap: 16px;
+    align-items: flex-start;
   }
   
-  .admin-detail {
-    padding: 16px;
+  .order-header {
+    flex-direction: column;
+    gap: 12px;
   }
   
+  .order-status {
+    align-self: flex-start;
+  }
 }
 
 @media (max-width: 480px) {
-  
-  .admin-info h2 {
+  .orders-header h2 {
     font-size: 20px;
   }
   
+  .order-card {
+    padding: 16px;
+  }
+  
+  .order-info h3 {
+    font-size: 18px;
+  }
 }

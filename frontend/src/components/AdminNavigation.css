@@ -1,0 +1,135 @@
+.admin-navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  height: 70px;
+}
+
+.nav-container {
+  width: 100%;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.nav-logo img {
+  height: 50px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.nav-logo:hover img {
+  transform: scale(1.05);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: var(--primary-blue);
+  background: var(--gray-50);
+  border-color: var(--primary-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 40, 141, 0.15);
+}
+
+.nav-link.active {
+  color: var(--primary-blue);
+  background: var(--gray-100);
+  border-color: var(--primary-blue);
+  box-shadow: 0 2px 8px rgba(5, 40, 141, 0.2);
+}
+
+.logout-btn {
+  background: var(--primary-red);
+  color: var(--white);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #7c0a02;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(155, 22, 49, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 16px;
+  }
+  
+  .nav-links {
+    gap: 16px;
+  }
+  
+  .nav-link {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+  
+  .nav-logo img {
+    height: 40px;
+  }
+  
+  .logout-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-navigation {
+    height: 60px;
+  }
+  
+  .nav-links {
+    gap: 8px;
+  }
+  
+  .nav-link {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
+  .nav-logo img {
+    height: 35px;
+  }
+  
+  .logout-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}

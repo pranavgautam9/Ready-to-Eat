@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './AdminHomeScreen.css';
+import './PastOrders.css';
 
-const AdminHomeScreen = ({ admin, onLogout }) => {
+const PastOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,10 +28,10 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
     });
   };
 
-  const fetchOrders = async () => {
+  const fetchPastOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/orders', {
+      const response = await fetch('http://localhost:5000/api/admin/orders/past', {
         credentials: 'include'
       });
       
@@ -41,52 +41,22 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
         setError(null);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to fetch orders');
+        setError(errorData.error || 'Failed to fetch past orders');
       }
     } catch (err) {
-      setError('Network error while fetching orders');
-      console.error('Fetch orders error:', err);
+      setError('Network error while fetching past orders');
+      console.error('Fetch past orders error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateOrderStatus = async (orderId, newStatus) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/admin/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ status: newStatus })
-      });
-      
-      if (response.ok) {
-        // Refresh orders after successful update
-        await fetchOrders();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to update order status');
-      }
-    } catch (err) {
-      setError('Network error while updating order status');
-      console.error('Update order status error:', err);
-    }
-  };
-
   useEffect(() => {
-    fetchOrders();
-    
-    // Refresh orders every 30 seconds
-    const interval = setInterval(fetchOrders, 30000);
-    return () => clearInterval(interval);
+    fetchPastOrders();
   }, []);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      current: { text: 'Current', class: 'status-current' },
-      ready: { text: 'Ready', class: 'status-ready' },
       completed: { text: 'Completed', class: 'status-completed' }
     };
     
@@ -94,58 +64,33 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
     return <span className={`status-badge ${config.class}`}>{config.text}</span>;
   };
 
-  const getStatusButtons = (order) => {
-    if (order.status === 'current') {
-      return (
-        <button 
-          className="status-btn ready-btn"
-          onClick={() => updateOrderStatus(order.id, 'ready')}
-        >
-          Mark as Ready
-        </button>
-      );
-    } else if (order.status === 'ready') {
-      return (
-        <button 
-          className="status-btn completed-btn"
-          onClick={() => updateOrderStatus(order.id, 'completed')}
-        >
-          Picked up
-        </button>
-      );
-    } else {
-      return <span className="no-action">No action available</span>;
-    }
-  };
-
   return (
-    <div className="admin-home-container">
+    <div className="past-orders-container">
       <div className="container">
-
         <div className="orders-section">
           <div className="orders-header">
-            <h2>Active Orders</h2>
-            <button className="refresh-btn" onClick={fetchOrders}>
+            <h2>Past Orders</h2>
+            <button className="refresh-btn" onClick={fetchPastOrders}>
               🔄 Refresh
             </button>
           </div>
 
           {loading && (
             <div className="loading-message">
-              <p>Loading orders...</p>
+              <p>Loading past orders...</p>
             </div>
           )}
 
           {error && (
             <div className="error-message">
               <p>Error: {error}</p>
-              <button onClick={fetchOrders}>Try Again</button>
+              <button onClick={fetchPastOrders}>Try Again</button>
             </div>
           )}
 
           {!loading && !error && orders.length === 0 && (
             <div className="no-orders-message">
-              <p>At this time, there are no active orders requiring attention.</p>
+              <p>No completed orders found in the system.</p>
             </div>
           )}
 
@@ -167,6 +112,11 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
                           Ready at: {formatTime(order.ready_time)}
                         </p>
                       )}
+                      {order.completed_time && (
+                        <p className="completed-time">
+                          Completed at: {formatTime(order.completed_time)}
+                        </p>
+                      )}
                     </div>
                     <div className="order-status">
                       {getStatusBadge(order.status)}
@@ -185,24 +135,24 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
                     </ul>
                   </div>
 
-                  <div className="order-actions">
-                    {getStatusButtons(order)}
-                  </div>
-
-                  {order.completed_time && (
-                    <div className="completed-time">
-                      <p>Completed at: {formatTime(order.completed_time)}</p>
+                  <div className="order-summary">
+                    <div className="summary-row">
+                      <span>Total Amount:</span>
+                      <span>₹{order.grand_total}</span>
                     </div>
-                  )}
+                    <div className="summary-row">
+                      <span>Points Earned:</span>
+                      <span>{order.points_earned} pts</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
 };
 
-export default AdminHomeScreen;
+export default PastOrders;

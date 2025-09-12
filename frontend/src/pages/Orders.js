@@ -34,12 +34,20 @@ const Orders = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('📦 Orders data received:', data);
+        console.log('📦 Orders array:', data.orders);
+        
+        // Check if orders exist and is an array
+        if (!data.orders || !Array.isArray(data.orders)) {
+          console.warn('⚠️ No orders found or invalid format:', data.orders);
+          setOrders([]);
+          return;
+        }
         
         // Convert API data to frontend format
         const formattedOrders = data.orders.map(order => ({
           id: order.id,
           orderNumber: order.order_number,
-          items: order.order_items.map(item => ({
+          items: (order.items || []).map(item => ({
             foodId: item.food_id,
             quantity: item.quantity,
             hasExtra: item.has_extra
