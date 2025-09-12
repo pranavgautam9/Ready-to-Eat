@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 import './Cart.css';
 
-const Cart = ({ cart, onUpdateCart }) => {
+const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const [estimatedTime, setEstimatedTime] = useState(15);
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(false);
   const navigate = useNavigate();
+  const { foodItems, loading } = useFoodItems();
 
   // Calculate estimated time based on current time
   useEffect(() => {
@@ -43,21 +44,32 @@ const Cart = ({ cart, onUpdateCart }) => {
     const cartItems = [];
 
     Object.entries(cart).forEach(([key, item]) => {
-      const foodItem = foodItems.find(f => f.id === item.foodId);
-      if (foodItem) {
-        const itemTotal = foodItem.price * item.quantity;
-        subtotal += itemTotal;
+      // Handle reward items (they have price 0 and are marked as isReward)
+      if (item.isReward) {
         cartItems.push({
-          ...foodItem,
-          quantity: item.quantity,
-          total: itemTotal,
-          hasExtra: item.hasExtra
+          ...item,
+          total: 0,
+          isReward: true,
+          id: item.foodId // Preserve the foodId for remove functionality
         });
+        // Reward items don't contribute to subtotal
+      } else {
+        const foodItem = foodItems.find(f => f.id === item.foodId);
+        if (foodItem) {
+          const itemTotal = foodItem.price * item.quantity;
+          subtotal += itemTotal;
+          cartItems.push({
+            ...foodItem,
+            quantity: item.quantity,
+            total: itemTotal,
+            hasExtra: item.hasExtra
+          });
+        }
       }
     });
 
     const tax = subtotal * 0.15; // 15% tax
-    const total = subtotal + tax;
+    const total = Math.floor(subtotal + tax); // Round down to nearest rupee
     const points = Math.floor(subtotal / 10); // 1 point for every ₹10 spent (excluding tax)
 
     return { cartItems, subtotal, tax, total, points };
@@ -83,11 +95,57 @@ const Cart = ({ cart, onUpdateCart }) => {
     }
   };
 
-  const removeItem = (foodId) => {
+  const removeItem = async (foodId, isReward = false) => {
     const newCart = { ...cart };
-    delete newCart[`${foodId}`];
-    delete newCart[`${foodId}_extra`];
+    if (isReward) {
+      // For reward items, find the correct cart key and restore points
+      Object.keys(cart).forEach(key => {
+        if (cart[key].foodId === foodId && cart[key].isReward) {
+          // Restore points for reward item
+          if (cart[key].rewardPoints) {
+            restorePoints(cart[key].rewardPoints);
+          }
+          delete newCart[key];
+        }
+      });
+    } else {
+      delete newCart[`${foodId}`];
+      delete newCart[`${foodId}_extra`];
+    }
     onUpdateCart(newCart);
+  };
+
+  const restorePoints = async (pointsToRestore) => {
+    try {
+      // Get current user points
+      const response = await fetch('http://localhost:5000/api/user/points', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const currentPoints = data.points || 0;
+        const newPoints = currentPoints + pointsToRestore;
+
+        // Update points in backend
+        await fetch('http://localhost:5000/api/user/points', {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ points: newPoints })
+        });
+
+        console.log(`Restored ${pointsToRestore} points. New total: ${newPoints}`);
+      }
+    } catch (error) {
+      console.error('Error restoring points:', error);
+    }
   };
 
   const handleCheckout = () => {
@@ -114,32 +172,44 @@ const Cart = ({ cart, onUpdateCart }) => {
       <div className="cart-content">
         <div className="cart-items">
           {cartItems.map((item) => (
-            <div key={item.id} className="cart-item">
+            <div key={`${item.id}-${item.isReward ? 'reward' : 'regular'}`} className={`cart-item ${item.isReward ? 'reward-item' : ''}`}>
               <div className="item-info">
-                <h3 className="item-name">{item.name}</h3>
+                <h3 className="item-name">
+                  {item.name}
+                </h3>
                 <div className="item-controls">
-                  <button 
-                    className="quantity-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  >
-                    -
-                  </button>
-                  <span className="quantity">Qty: {item.quantity}</span>
-                  <button 
-                    className="quantity-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  >
-                    +
-                  </button>
-                  <button 
-                    className="remove-btn"
-                    onClick={() => removeItem(item.id)}
-                  >
-                    Remove
-                  </button>
+                  {!item.isReward ? (
+                    <>
+                      <button 
+                        className="quantity-btn"
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      >
+                        -
+                      </button>
+                      <span className="quantity">Qty: {item.quantity}</span>
+                      <button 
+                        className="quantity-btn"
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </>
+                  ) : (
+                    <span className="quantity">Qty: {item.quantity}</span>
+                  )}
                 </div>
               </div>
-              <div className="item-price">₹{item.total}</div>
+              <div className="item-price-section">
+                <div className="item-price">
+                  {item.isReward ? 'FREE' : `₹${item.total}`}
+                </div>
+                <button 
+                  className="remove-btn"
+                  onClick={() => removeItem(item.id, item.isReward)}
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>

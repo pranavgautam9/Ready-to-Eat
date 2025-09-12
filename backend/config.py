@@ -12,3 +12,9 @@ class Config:
         'pool_recycle': 300,
         'pool_pre_ping': True
     }
+    
+    # Database connection parameters for direct MySQL access
+    DB_HOST = 'localhost'
+    DB_USER = 'root'
+    DB_PASSWORD = 'rootpassword'
+    DB_NAME = 'ready_to_eat'

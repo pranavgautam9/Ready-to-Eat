@@ -14,6 +14,9 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     mobile = db.Column(db.String(15), nullable=False)
+    points = db.Column(db.Integer, default=0)
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expires = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -30,6 +33,7 @@ class User(db.Model):
             'last_name': self.last_name,
             'email': self.email,
             'mobile': self.mobile,
+            'points': self.points or 0,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
@@ -70,6 +74,7 @@ class FoodItem(db.Model):
     image_path = db.Column(db.String(255))
     has_extra_option = db.Column(db.Boolean, default=False)
     is_available = db.Column(db.Boolean, default=True)
+    is_reward = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -81,6 +86,7 @@ class FoodItem(db.Model):
             'image_path': self.image_path,
             'has_extra_option': self.has_extra_option,
             'is_available': self.is_available,
+            'is_reward': self.is_reward,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
@@ -127,7 +133,7 @@ class Order(db.Model):
             'completed_time': self.completed_time.isoformat() if self.completed_time else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'order_items': [item.to_dict() for item in self.order_items]
+            'items': [item.to_dict() for item in self.order_items]
         }
 
 class OrderItem(db.Model):
@@ -148,7 +154,9 @@ class OrderItem(db.Model):
             'id': self.id,
             'order_id': self.order_id,
             'food_id': self.food_id,
+            'name': self.food_name,
             'food_name': self.food_name,
+            'price': float(self.food_price),
             'food_price': float(self.food_price),
             'quantity': self.quantity,
             'has_extra': self.has_extra,

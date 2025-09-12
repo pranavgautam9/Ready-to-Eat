@@ -44,7 +44,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
     setAdminError('');
 
     try {
-      const response = await fetch('/api/admin/login', {
+      const response = await fetch('http://localhost:5000/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
   const handleGuestAccess = async () => {
     setGuestLoading(true);
     try {
-      const response = await fetch('/api/guest/access', {
+      const response = await fetch('http://localhost:5000/api/guest/access', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,8 +125,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
   };
 
   const handleForgotPassword = () => {
-    // TODO: Implement forgot password functionality
-    alert('Forgot password functionality will be implemented soon!');
+    navigate('/forgot-password');
   };
 
   return (
@@ -275,6 +274,12 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
                   {showAdminPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+            </div>
+
+            <div className="forgot-password">
+              <button type="button" onClick={handleForgotPassword}>
+                Forgot Password?
+              </button>
             </div>
 
             {adminError && (

@@ -69,6 +69,15 @@
   box-shadow: var(--shadow);
 }
 
+/* Override any gradient styles for login buttons */
+.btn-primary {
+  background: var(--primary-red) !important;
+}
+
+.btn-primary:hover {
+  background: #7c0a02 !important;
+}
+
 .error-message {
   background: rgba(220, 38, 38, 0.1);
   border: 1px solid rgba(220, 38, 38, 0.2);
@@ -162,7 +171,17 @@
   position: absolute;
   top: 50%;
   left: 0;
+  width: calc(50% - 30px);
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
   right: 0;
+  width: calc(50% - 30px);
   height: 1px;
   background: var(--gray-200);
 }
@@ -192,6 +211,25 @@
   background: var(--gray-300);
   margin: 0 auto;
   border-radius: 0.5px;
+}
+
+/* Force admin username input to match password input exactly */
+#admin-username {
+  padding: 12px 16px !important;
+  padding-right: 50px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  transition: border-color 0.3s ease !important;
+  background: white !important;
+}
+
+#admin-username:focus {
+  outline: none !important;
+  border-color: var(--primary-blue) !important;
+  box-shadow: 0 0 0 3px rgba(5, 40, 141, 0.1) !important;
 }
 
 @media (max-width: 768px) {

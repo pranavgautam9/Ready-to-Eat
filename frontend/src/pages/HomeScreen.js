@@ -3,10 +3,11 @@ import './HomeScreen.css';
 import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
 import { Link } from 'react-router-dom';
 import FoodCard from '../components/FoodCard';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 
 const HomeScreen = ({ user, onLogout, onCartUpdate, cart, onUpdateCart }) => {
   const [totalItems, setTotalItems] = useState(0);
+  const { foodItems, loading, error } = useFoodItems();
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -78,17 +79,27 @@ const HomeScreen = ({ user, onLogout, onCartUpdate, cart, onUpdateCart }) => {
 
 
         <div className="food-section">
-          <div className="food-grid">
-            {foodItems.map((foodItem) => (
-              <FoodCard
-                key={foodItem.id}
-                foodItem={foodItem}
-                onAddToCart={addToCart}
-                onRemoveFromCart={removeFromCart}
-                cartQuantity={getCartQuantity(foodItem.id)}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="loading-message">
+              <p>Loading menu items...</p>
+            </div>
+          ) : error ? (
+            <div className="error-message">
+              <p>Error loading menu items: {error}</p>
+            </div>
+          ) : (
+            <div className="food-grid">
+              {foodItems.map((foodItem) => (
+                <FoodCard
+                  key={foodItem.id}
+                  foodItem={foodItem}
+                  onAddToCart={addToCart}
+                  onRemoveFromCart={removeFromCart}
+                  cartQuantity={getCartQuantity(foodItem.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="disclaimer">

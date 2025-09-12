@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(120) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     mobile VARCHAR(15) NOT NULL,
+    points INT DEFAULT 0,
+    reset_token VARCHAR(100) NULL,
+    reset_token_expires DATETIME NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -35,13 +38,14 @@ VALUES (
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Insert test user (password: Password123!)
-INSERT INTO users (first_name, last_name, email, password_hash, mobile) 
+INSERT INTO users (first_name, last_name, email, password_hash, mobile, points) 
 VALUES (
     'Test', 
     'User', 
     'testuser@gmail.com', 
     'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
-    '9999999999'
+    '9999999999',
+    0
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Create orders table
@@ -106,7 +110,14 @@ INSERT INTO food_items (id, name, price, image_path, has_extra_option) VALUES
 (11, 'Lays Chips', 20.00, 'Lays.jpg', FALSE),
 (12, 'Kurkure', 20.00, 'Kurkure.jpg', FALSE),
 (13, 'Coca Cola', 20.00, 'Coca Cola.jpg', FALSE),
-(14, 'Frooti', 15.00, 'Frooti.jpg', FALSE)
+(14, 'Frooti', 15.00, 'Frooti.jpg', FALSE),
+-- Reward items (IDs 101-106)
+(101, 'Samosa (Reward)', 0.00, 'samosa-reward.jpg', FALSE),
+(102, 'Kachori (Reward)', 0.00, 'kachori-reward.jpg', FALSE),
+(103, 'Veg Burger (Reward)', 0.00, 'veg-burger-reward.jpg', FALSE),
+(104, 'Hakka Noodles (Reward)', 0.00, 'hakka-noodles-reward.jpg', FALSE),
+(105, 'Pav Bhaji + Lays + Coca Cola (Reward)', 0.00, 'combo1-reward.jpg', FALSE),
+(106, 'Chole Bhature + Kurkure + Frooti (Reward)', 0.00, 'combo2-reward.jpg', FALSE)
 ON DUPLICATE KEY UPDATE 
     name = VALUES(name),
     price = VALUES(price),
@@ -122,3 +133,4 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_order_time ON orders(order_time);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_food_items_available ON food_items(is_available);
+CREATE INDEX idx_users_points ON users(points);

@@ -82,7 +82,7 @@ export const foodItems = [
   {
     id: 10,
     name: "Cold Coffee",
-    price: 20,
+    price: 30,
     image: ColdCoffee,
     hasExtraOption: false
   },

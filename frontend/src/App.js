@@ -8,7 +8,17 @@ import AdminHomeScreen from './pages/AdminHomeScreen';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Rewards from './pages/Rewards';
+import MyAccount from './pages/MyAccount';
+import ChangePassword from './pages/ChangePassword';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import AdminAccount from './pages/AdminAccount';
+import AdminChangePassword from './pages/AdminChangePassword';
+import PastOrders from './pages/PastOrders';
+import ConfigureMenu from './pages/ConfigureMenu';
 import Navigation from './components/Navigation';
+import AdminNavigation from './components/AdminNavigation';
 import './App.css';
 
 // Create a wrapper component to access location
@@ -17,11 +27,15 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
   
   // Don't show navigation on splash screen
   const shouldShowNavigation = isAuthenticated && userType !== 'admin' && location.pathname !== '/';
+  const shouldShowAdminNavigation = isAuthenticated && userType === 'admin' && location.pathname !== '/';
 
   return (
     <div className="App">
       {shouldShowNavigation && (
         <Navigation cartItemCount={cartItemCount} onLogout={handleLogout} />
+      )}
+      {shouldShowAdminNavigation && (
+        <AdminNavigation onLogout={handleLogout} />
       )}
       <Routes>
         <Route 
@@ -56,21 +70,15 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/orders" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>Orders</h1>
-              <p>Your order history will appear here.</p>
-            </div> : 
+            <Orders /> : 
             <Navigate to="/login" replace />
           } 
         />
         <Route 
-          path="/rewards" 
+          path="/rewards"
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>Rewards</h1>
-              <p>Your rewards and points will appear here.</p>
-            </div> : 
+            <Rewards cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} userType={userType} /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -78,18 +86,31 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           path="/account" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <div className="page-container">
-              <h1>My Account</h1>
-              <p>Your account settings will appear here.</p>
-            </div> : 
+            <MyAccount user={user} onLogout={handleLogout} /> : 
             <Navigate to="/login" replace />
           } 
+        />
+        <Route 
+          path="/change-password" 
+          element={
+            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
+            <ChangePassword /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={<ForgotPassword />} 
+        />
+        <Route 
+          path="/reset-password" 
+          element={<ResetPassword />} 
         />
         <Route 
           path="/cart" 
           element={
             isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <Cart cart={cart} onUpdateCart={onUpdateCart} /> : 
+            <Cart cart={cart} onUpdateCart={onUpdateCart} onCartUpdate={setCartItemCount} /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -102,18 +123,46 @@ function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handl
           } 
         />
         <Route 
-          path="/orders" 
-          element={
-            isAuthenticated && (userType === 'user' || userType === 'guest') ? 
-            <Orders /> : 
-            <Navigate to="/login" replace />
-          } 
+          path="*" 
+          element={<div style={{padding: '20px', background: 'yellow', color: 'black', fontSize: '30px'}}><h1>🚨 CATCH-ALL ROUTE: {location.pathname}</h1></div>} 
         />
         <Route 
           path="/admin" 
           element={
             isAuthenticated && userType === 'admin' ? 
             <AdminHomeScreen admin={admin} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/admin/orders" 
+          element={
+            isAuthenticated && userType === 'admin' ? 
+            <PastOrders /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/admin/menu" 
+          element={
+            isAuthenticated && userType === 'admin' ? 
+            <ConfigureMenu /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/admin/account" 
+          element={
+            isAuthenticated && userType === 'admin' ? 
+            <AdminAccount admin={admin} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/admin/change-password" 
+          element={
+            isAuthenticated && userType === 'admin' ? 
+            <AdminChangePassword /> : 
             <Navigate to="/login" replace />
           } 
         />
@@ -138,7 +187,21 @@ function App() {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/api/user/profile', {
+      // First try to check if user is admin
+      const adminResponse = await fetch('http://localhost:5000/api/admin/profile', {
+        credentials: 'include'
+      });
+      
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json();
+        setAdmin(adminData.admin);
+        setUserType('admin');
+        setIsAuthenticated(true);
+        return;
+      }
+      
+      // If not admin, check if regular user
+      const response = await fetch('http://localhost:5000/api/user/profile', {
         credentials: 'include'
       });
       
@@ -147,11 +210,6 @@ function App() {
         if (data.user.is_guest) {
           setUser(data.user);
           setUserType('guest');
-          setIsAuthenticated(true);
-        } else if (data.user.role) {
-          // This is an admin
-          setAdmin(data.user);
-          setUserType('admin');
           setIsAuthenticated(true);
         } else {
           // This is a regular user
@@ -191,7 +249,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', {
+      await fetch('http://localhost:5000/api/logout', {
         method: 'POST',
         credentials: 'include'
       });
