@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 import PayTMImage from '../assets/paytm.png';
 import GPayImage from '../assets/gpay.png';
 import './Checkout.css';
@@ -7,6 +7,7 @@ import './Checkout.css';
 const Checkout = ({ cart, onUpdateCart }) => {
   const [selectedPayment, setSelectedPayment] = useState('');
   const [estimatedTime, setEstimatedTime] = useState(15);
+  const { foodItems, loading } = useFoodItems();
   const [paymentDetails, setPaymentDetails] = useState({
     paytmNumber: '',
     gpayUpi: '',

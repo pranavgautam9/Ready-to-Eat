@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 import './Orders.css';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(true);
+  const { foodItems } = useFoodItems();
 
   // Update current time every minute for countdown
   useEffect(() => {
@@ -194,11 +195,15 @@ const Orders = () => {
 
   return (
     <div className="orders-container">
-      <div className="orders-content">
-        {/* Current Orders */}
-        {currentOrders.length > 0 && (
+      {/* Current Orders Heading */}
+      {currentOrders.length > 0 && (
+        <h2 className="section-title">Current Orders</h2>
+      )}
+      
+      {/* Current Orders Content */}
+      {currentOrders.length > 0 && (
+        <div className="orders-content">
           <div className="orders-section">
-            <h2 className="section-title">Current Orders</h2>
             <div className="orders-list">
               {currentOrders.map(order => (
                 <div key={order.id} className="order-card current">
@@ -240,12 +245,18 @@ const Orders = () => {
               ))}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Past Orders */}
-        {pastOrders.length > 0 && (
+      {/* Past Orders Heading */}
+      {pastOrders.length > 0 && (
+        <h2 className="section-title">Past Orders</h2>
+      )}
+      
+      {/* Past Orders Content */}
+      {pastOrders.length > 0 && (
+        <div className="orders-content">
           <div className="orders-section">
-            <h2 className="section-title">Past Orders</h2>
             <div className="orders-list">
               {pastOrders.map(order => (
                 <div key={order.id} className="order-card past">
@@ -285,17 +296,19 @@ const Orders = () => {
               ))}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* No Orders Message */}
-        {currentOrders.length === 0 && pastOrders.length === 0 && (
+      {/* No Orders Message */}
+      {currentOrders.length === 0 && pastOrders.length === 0 && (
+        <div className="orders-content">
           <div className="no-orders">
             <div className="no-orders-icon">📋</div>
             <h2>No orders yet</h2>
             <p>Your order history will appear here once you place your first order.</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 import './Cart.css';
 
 const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const [estimatedTime, setEstimatedTime] = useState(15);
   const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(false);
   const navigate = useNavigate();
+  const { foodItems, loading } = useFoodItems();
 
   // Calculate estimated time based on current time
   useEffect(() => {

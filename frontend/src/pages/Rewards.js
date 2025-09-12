@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { foodItems } from '../data/foodItems';
+import useFoodItems from '../hooks/useFoodItems';
 import './Rewards.css';
 
 const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [redeemedReward, setRedeemedReward] = useState(null);
+  const { foodItems } = useFoodItems();
 
   // Reward tiers configuration
   const rewardTiers = [

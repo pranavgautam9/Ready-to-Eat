@@ -319,6 +319,13 @@ def create_order():
             )
             db.session.add(order_item)
         
+        # Update user's total points if this is a user order (not guest)
+        if user_type == 'user' and user_id:
+            user = User.query.get(user_id)
+            if user:
+                current_points = user.points or 0
+                user.points = current_points + data['points_earned']
+        
         db.session.commit()
         
         return jsonify({
@@ -938,9 +945,9 @@ def reset_password():
 
 @api.route('/food-items', methods=['GET'])
 def get_food_items():
-    """Get all available food items"""
+    """Get all available food items (excluding reward items)"""
     try:
-        food_items = FoodItem.query.filter_by(is_available=True).all()
+        food_items = FoodItem.query.filter_by(is_available=True, is_reward=False).all()
         return jsonify({'food_items': [item.to_dict() for item in food_items]}), 200
         
     except Exception as e:

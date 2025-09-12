@@ -74,6 +74,7 @@ class FoodItem(db.Model):
     image_path = db.Column(db.String(255))
     has_extra_option = db.Column(db.Boolean, default=False)
     is_available = db.Column(db.Boolean, default=True)
+    is_reward = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -85,6 +86,7 @@ class FoodItem(db.Model):
             'image_path': self.image_path,
             'has_extra_option': self.has_extra_option,
             'is_available': self.is_available,
+            'is_reward': self.is_reward,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
