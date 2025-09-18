@@ -38,13 +38,18 @@ In your Railway project, go to Variables tab and add:
 
 ```
 SECRET_KEY=your-super-secret-key-change-this-in-production
-DATABASE_URL=mysql+pymysql://username:password@host:port/database_name
+DATABASE_URL=mysql+pymysql://root:YOUR_MYSQL_PASSWORD@mysql.railway.internal:3306/railway
 FLASK_ENV=production
 FLASK_DEBUG=False
 PORT=5000
 ```
 
-**Note**: Replace the DATABASE_URL with the actual connection string from your Railway MySQL database.
+**Note**: Replace `YOUR_MYSQL_PASSWORD` with your actual MySQL password from Railway. The standard Railway MySQL connection details are:
+- **Host**: `mysql.railway.internal`
+- **Port**: `3306`
+- **Database**: `railway`
+- **Username**: `root`
+- **Password**: (Get this from your MySQL service variables in Railway)
 
 ### 1.5 Get Backend URL
 1. After deployment completes, Railway will provide a URL like: `https://your-app-name.railway.app`
@@ -137,19 +142,31 @@ If you have a custom domain:
 
 ### Common Issues
 
-1. **CORS Errors**
+1. **Database Connection Issues - "Can't connect to MySQL server on 'localhost'"**
+   - **Problem**: Railway created a malformed DATABASE_URL with placeholder text
+   - **Solution**: Delete the auto-generated DATABASE_URL and create a new one manually:
+     ```
+     DATABASE_URL=mysql+pymysql://root:YOUR_MYSQL_PASSWORD@mysql.railway.internal:3306/railway
+     ```
+   - Replace `YOUR_MYSQL_PASSWORD` with your actual MySQL password from Railway
+
+2. **Database Connection Issues - "invalid literal for int() with base 10: 'MYSQL_PORT'"**
+   - **Problem**: Railway's auto-generated DATABASE_URL contains literal text instead of values
+   - **Solution**: Use the standard Railway MySQL connection format:
+     - **Host**: `mysql.railway.internal`
+     - **Port**: `3306`
+     - **Database**: `railway`
+     - **Username**: `root`
+
+3. **CORS Errors**
    - Verify CORS origins in `backend/app.py` include your frontend URL
    - Check that your frontend is using HTTPS in production
 
-2. **Database Connection Issues**
-   - Verify DATABASE_URL environment variable is correct
-   - Check Railway MySQL database is running
-
-3. **Frontend Build Failures**
+4. **Frontend Build Failures**
    - Check GitHub Actions logs for specific errors
    - Ensure all dependencies are properly listed in `package.json`
 
-4. **API Calls Failing**
+5. **API Calls Failing**
    - Verify `frontend/src/config.js` has the correct production URL
    - Check that the backend is deployed and accessible
 

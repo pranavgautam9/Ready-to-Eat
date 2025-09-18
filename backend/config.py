@@ -14,32 +14,6 @@ class Config:
         'mysql+pymysql://root:rootpassword@localhost/ready_to_eat'
     )
     
-    # Debug: Print database URI (without password for security)
-    @classmethod
-    def print_db_info(cls):
-        db_uri = cls.SQLALCHEMY_DATABASE_URI
-        # Hide password in logs
-        if '@' in db_uri and ':' in db_uri:
-            parts = db_uri.split('@')
-            if len(parts) == 2:
-                user_pass = parts[0]
-                if ':' in user_pass:
-                    user = user_pass.split(':')[0]
-                    safe_uri = db_uri.replace(user_pass, f"{user}:***")
-                    print(f"Database URI: {safe_uri}")
-                else:
-                    print(f"Database URI: {db_uri}")
-            else:
-                print(f"Database URI: {db_uri}")
-        else:
-            print(f"Database URI: {db_uri}")
-        
-        # Print environment variables for debugging
-        print(f"DATABASE_URL env var: {'SET' if os.environ.get('DATABASE_URL') else 'NOT SET'}")
-        print(f"MYSQL_URL env var: {'SET' if os.environ.get('MYSQL_URL') else 'NOT SET'}")
-        print(f"MYSQL_HOST env var: {'SET' if os.environ.get('MYSQL_HOST') else 'NOT SET'}")
-        print(f"FLASK_ENV: {os.environ.get('FLASK_ENV', 'NOT SET')}")
-    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_recycle': 300,

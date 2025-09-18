@@ -10,11 +10,6 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Debug: Print database configuration
-    print("=== Railway Deployment Debug Info ===")
-    Config.print_db_info()
-    print("=====================================")
-    
     # Configure session persistence (15 days)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
     
