@@ -16,8 +16,13 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     
-    # Enable CORS
-    CORS(app, supports_credentials=True, origins=['http://localhost:3000'])
+    # Enable CORS - allow both development and production origins
+    allowed_origins = [
+        'http://localhost:3000',
+        'https://yourdomain.github.io',  # Replace with your actual GitHub Pages URL
+        'https://yourdomain.com'  # Replace with your custom domain if you have one
+    ]
+    CORS(app, supports_credentials=True, origins=allowed_origins)
     
     # Register blueprints
     app.register_blueprint(api, url_prefix='/api')
@@ -61,4 +66,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)

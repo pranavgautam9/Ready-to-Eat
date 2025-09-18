@@ -14,7 +14,11 @@ class Config:
     }
     
     # Database connection parameters for direct MySQL access
-    DB_HOST = 'localhost'
-    DB_USER = 'root'
-    DB_PASSWORD = 'rootpassword'
-    DB_NAME = 'ready_to_eat'
+    DB_HOST = os.environ.get('DB_HOST', 'localhost')
+    DB_USER = os.environ.get('DB_USER', 'root')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'rootpassword')
+    DB_NAME = os.environ.get('DB_NAME', 'ready_to_eat')
+    
+    # Production settings
+    DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    FLASK_ENV = os.environ.get('FLASK_ENV', 'development')

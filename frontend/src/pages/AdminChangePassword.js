@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import config from '../config';
 import './ChangePassword.css';
 
 const AdminChangePassword = () => {
@@ -39,7 +40,7 @@ const AdminChangePassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/admin/change-password', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/change-password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

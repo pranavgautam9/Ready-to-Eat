@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import config from '../config';
 import './ResetPassword.css';
 
 const ResetPassword = () => {
@@ -41,7 +42,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/reset-password', {
+      const response = await fetch('${config.API_BASE_URL}/api/reset-password', {
         method: 'POST',
         credentials: 'include',
         headers: {

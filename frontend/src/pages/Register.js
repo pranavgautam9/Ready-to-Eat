@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
 import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
+import config from '../config';
 
 const Register = ({ onRegister }) => {
   const [formData, setFormData] = useState({
@@ -65,7 +66,7 @@ const Register = ({ onRegister }) => {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch(`${config.API_BASE_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

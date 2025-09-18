@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from '../config';
 import './PastOrders.css';
 
 const PastOrders = () => {
@@ -31,7 +32,7 @@ const PastOrders = () => {
   const fetchPastOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/orders/past', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/orders/past', {
         credentials: 'include'
       });
       

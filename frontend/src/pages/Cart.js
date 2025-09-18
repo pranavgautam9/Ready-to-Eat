@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useFoodItems from '../hooks/useFoodItems';
+import config from '../config';
 import './Cart.css';
 
 const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
@@ -118,7 +119,7 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const restorePoints = async (pointsToRestore) => {
     try {
       // Get current user points
-      const response = await fetch('http://localhost:5000/api/user/points', {
+      const response = await fetch('${config.API_BASE_URL}/api/user/points', {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -132,7 +133,7 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
         const newPoints = currentPoints + pointsToRestore;
 
         // Update points in backend
-        await fetch('http://localhost:5000/api/user/points', {
+        await fetch('${config.API_BASE_URL}/api/user/points', {
           method: 'PUT',
           credentials: 'include',
           headers: {

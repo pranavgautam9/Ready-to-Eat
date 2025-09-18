@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import config from '../config';
 import './AdminHomeScreen.css';
 
 const AdminHomeScreen = ({ admin, onLogout }) => {
@@ -31,7 +32,7 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/orders', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/orders', {
         credentials: 'include'
       });
       
@@ -53,7 +54,7 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/orders/${orderId}/status`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

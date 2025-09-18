@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import MediCapsLogo from '../assets/MediCaps-Logo-no-bg.png';
+import config from '../config';
 
 const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch(`${config.API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
     setAdminError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/admin/login', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ const Login = ({ onLogin, onGuestLogin, onAdminLogin }) => {
   const handleGuestAccess = async () => {
     setGuestLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/guest/access', {
+      const response = await fetch(`${config.API_BASE_URL}/api/guest/access`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

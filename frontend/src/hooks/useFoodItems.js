@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import config from '../config';
 
 const useFoodItems = () => {
   const [foodItems, setFoodItems] = useState([]);
@@ -9,7 +10,7 @@ const useFoodItems = () => {
     const fetchFoodItems = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/food-items', {
+        const response = await fetch(`${config.API_BASE_URL}/api/food-items`, {
           method: 'GET',
           credentials: 'include',
           headers: {

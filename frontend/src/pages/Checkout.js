@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useFoodItems from '../hooks/useFoodItems';
 import PayTMImage from '../assets/paytm.png';
 import GPayImage from '../assets/gpay.png';
+import config from '../config';
 import './Checkout.css';
 
 const Checkout = ({ cart, onUpdateCart }) => {
@@ -105,7 +106,7 @@ const Checkout = ({ cart, onUpdateCart }) => {
         payment_details: paymentDetails
       };
 
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch('${config.API_BASE_URL}/api/orders', {
         method: 'POST',
         credentials: 'include', // Include cookies for session
         headers: {

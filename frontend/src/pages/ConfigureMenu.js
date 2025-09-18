@@ -17,6 +17,7 @@ import Kurkure from '../assets/Kurkure.jpg';
 import CocaCola from '../assets/Coca Cola.jpg';
 import Frooti from '../assets/Frooti.jpg';
 
+import config from '../config';
 // Map image paths to imported images
 const imageMap = {
   '/src/assets/Samosa.jpg': Samosa,
@@ -51,7 +52,7 @@ const ConfigureMenu = () => {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/menu', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/menu', {
         credentials: 'include'
       });
       
@@ -73,7 +74,7 @@ const ConfigureMenu = () => {
 
   const updateItemPrice = async (itemId, newPrice) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/menu/${itemId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/menu/${itemId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ const ConfigureMenu = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/menu/${itemId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/menu/${itemId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -120,7 +121,7 @@ const ConfigureMenu = () => {
 
   const addNewItem = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/menu', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/menu', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +196,7 @@ const ConfigureMenu = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:5000/api/admin/upload-image', {
+      const response = await fetch('${config.API_BASE_URL}/api/admin/upload-image', {
         method: 'POST',
         credentials: 'include',
         body: formData

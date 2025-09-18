@@ -19,6 +19,7 @@ import PastOrders from './pages/PastOrders';
 import ConfigureMenu from './pages/ConfigureMenu';
 import Navigation from './components/Navigation';
 import AdminNavigation from './components/AdminNavigation';
+import config from './config';
 import './App.css';
 
 // Create a wrapper component to access location
@@ -188,7 +189,7 @@ function App() {
   const checkAuthStatus = async () => {
     try {
       // First try to check if user is admin
-      const adminResponse = await fetch('http://localhost:5000/api/admin/profile', {
+      const adminResponse = await fetch(`${config.API_BASE_URL}/api/admin/profile`, {
         credentials: 'include'
       });
       
@@ -201,7 +202,7 @@ function App() {
       }
       
       // If not admin, check if regular user
-      const response = await fetch('http://localhost:5000/api/user/profile', {
+      const response = await fetch(`${config.API_BASE_URL}/api/user/profile`, {
         credentials: 'include'
       });
       
@@ -249,7 +250,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5000/api/logout', {
+      await fetch(`${config.API_BASE_URL}/api/logout`, {
         method: 'POST',
         credentials: 'include'
       });
