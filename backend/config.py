@@ -8,11 +8,23 @@ class Config:
     
     # Railway automatically provides DATABASE_URL when you add MySQL
     # Priority: Railway's DATABASE_URL > Custom DATABASE_URL > localhost fallback
-    SQLALCHEMY_DATABASE_URI = (
-        os.environ.get('DATABASE_URL') or  # Railway's automatic DATABASE_URL
-        os.environ.get('MYSQL_URL') or     # Alternative Railway variable
-        'mysql+pymysql://root:rootpassword@localhost/ready_to_eat'
-    )
+    DATABASE_URL = os.environ.get('DATABASE_URL') or os.environ.get('MYSQL_URL')
+    
+    # If DATABASE_URL is not set, construct it from individual components
+    if not DATABASE_URL:
+        # Try to construct from Railway MySQL variables
+        mysql_host = os.environ.get('MYSQL_HOST') or os.environ.get('MYSQLHOST')
+        mysql_port = os.environ.get('MYSQL_PORT') or os.environ.get('MYSQLPORT', '3306')
+        mysql_database = os.environ.get('MYSQL_DATABASE') or os.environ.get('MYSQLDATABASE', 'railway')
+        mysql_user = os.environ.get('MYSQL_USER') or os.environ.get('MYSQLUSER', 'root')
+        mysql_password = os.environ.get('MYSQL_PASSWORD') or os.environ.get('MYSQLPASSWORD')
+        
+        if mysql_host and mysql_password:
+            DATABASE_URL = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
+        else:
+            DATABASE_URL = 'mysql+pymysql://root:rootpassword@localhost/ready_to_eat'
+    
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
