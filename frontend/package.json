@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set DISABLE_ESLINT_PLUGIN=true && react-scripts build",
+    "build": "react-scripts build",
+    "build:windows": "build-windows.bat",
     "build:local": "react-scripts build",
     "build:ci": "CI=false react-scripts build",
     "test": "react-scripts test",
