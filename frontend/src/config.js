@@ -4,7 +4,7 @@ const config = {
     API_BASE_URL: 'http://localhost:5000',
   },
   production: {
-    API_BASE_URL: 'ready-to-eat-production.up.railway.app', // Replace with your actual backend URL
+    API_BASE_URL: 'https://ready-to-eat-production.up.railway.app', // Your actual Railway backend URL
   }
 };
 
