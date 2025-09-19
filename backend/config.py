@@ -20,6 +20,43 @@ class Config:
             # Fallback to localhost for development
             DATABASE_URL = 'mysql+pymysql://root:rootpassword@localhost/ready_to_eat'
     
+    # Debug: Print the database URL (hide password for security)
+    if DATABASE_URL and '@' in DATABASE_URL:
+        # Hide password in logs
+        parts = DATABASE_URL.split('@')
+        if len(parts) == 2:
+            user_pass = parts[0]
+            if ':' in user_pass:
+                user = user_pass.split(':')[0]
+                safe_url = DATABASE_URL.replace(user_pass, f"{user}:***")
+                print(f"Database URL: {safe_url}")
+            else:
+                print(f"Database URL: {DATABASE_URL}")
+        else:
+            print(f"Database URL: {DATABASE_URL}")
+    else:
+        print(f"Database URL: {DATABASE_URL}")
+    
+    # Debug: Print environment variables
+    print(f"DATABASE_URL env: {'SET' if os.environ.get('DATABASE_URL') else 'NOT SET'}")
+    print(f"MYSQL_URL env: {'SET' if os.environ.get('MYSQL_URL') else 'NOT SET'}")
+    if os.environ.get('MYSQL_URL'):
+        mysql_url = os.environ.get('MYSQL_URL')
+        if '@' in mysql_url:
+            parts = mysql_url.split('@')
+            if len(parts) == 2:
+                user_pass = parts[0]
+                if ':' in user_pass:
+                    user = user_pass.split(':')[0]
+                    safe_mysql_url = mysql_url.replace(user_pass, f"{user}:***")
+                    print(f"MYSQL_URL: {safe_mysql_url}")
+                else:
+                    print(f"MYSQL_URL: {mysql_url}")
+            else:
+                print(f"MYSQL_URL: {mysql_url}")
+        else:
+            print(f"MYSQL_URL: {mysql_url}")
+    
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
