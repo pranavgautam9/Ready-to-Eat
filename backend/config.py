@@ -14,6 +14,10 @@ class Config:
     if not DATABASE_URL:
         mysql_url = os.environ.get('MYSQL_URL')
         if mysql_url:
+            # Clean the URL - remove any variable name prefix (e.g., "MYSQL_URL=")
+            if '=' in mysql_url and mysql_url.startswith('MYSQL_URL='):
+                mysql_url = mysql_url.split('=', 1)[1]
+            
             # Convert mysql:// to mysql+pymysql:// for SQLAlchemy
             DATABASE_URL = mysql_url.replace('mysql://', 'mysql+pymysql://')
         else:
