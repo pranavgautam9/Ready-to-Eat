@@ -8,8 +8,5 @@ const config = {
   }
 };
 
-// Determine current environment
-const isDevelopment = process.env.NODE_ENV === 'development';
-const currentConfig = isDevelopment ? config.development : config.production;
-
-export default currentConfig;
+// Always use production config for now to ensure it works
+export default config.production;
