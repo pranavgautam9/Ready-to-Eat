@@ -40,7 +40,7 @@ const ChangePassword = () => {
     }
 
     try {
-      const response = await fetch('${config.API_BASE_URL}/api/user/change-password', {
+      const response = await fetch(`${config.API_BASE_URL}/api/user/change-password`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

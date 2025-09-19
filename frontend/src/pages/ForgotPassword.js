@@ -17,7 +17,7 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch('${config.API_BASE_URL}/api/forgot-password', {
+      const response = await fetch(`${config.API_BASE_URL}/api/forgot-password`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
         setMessage(data.message);
         // Show the reset token for testing (remove in production)
         if (data.reset_token) {
-          setMessage(`${data.message}\n\nReset Token: ${data.reset_token}\n\nReset Link: http://localhost:3000/reset-password?token=${data.reset_token}`);
+          setMessage(`${data.message}\n\nReset Token: ${data.reset_token}\n\nReset Link: https://pranavgautam.com/Ready-to-Eat/#/reset-password?token=${data.reset_token}`);
         }
       } else {
         setError(data.error || 'Failed to send reset email');

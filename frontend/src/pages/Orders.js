@@ -22,7 +22,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       console.log('🔍 Fetching orders from API...');
-      const response = await fetch('${config.API_BASE_URL}/api/orders', {
+      const response = await fetch(`${config.API_BASE_URL}/api/orders`, {
         method: 'GET',
         credentials: 'include', // Include cookies for session
         headers: {
@@ -117,7 +117,7 @@ const Orders = () => {
   useEffect(() => {
     const updateOrderStatuses = async () => {
       try {
-        const response = await fetch('${config.API_BASE_URL}/api/orders/update-status', {
+        const response = await fetch(`${config.API_BASE_URL}/api/orders/update-status`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

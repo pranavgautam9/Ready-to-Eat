@@ -42,7 +42,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch('${config.API_BASE_URL}/api/reset-password', {
+      const response = await fetch(`${config.API_BASE_URL}/api/reset-password`, {
         method: 'POST',
         credentials: 'include',
         headers: {

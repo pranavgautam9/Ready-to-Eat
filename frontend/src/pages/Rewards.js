@@ -66,7 +66,7 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
   useEffect(() => {
     const fetchUserPoints = async () => {
       try {
-        const response = await fetch('${config.API_BASE_URL}/api/user/points', {
+        const response = await fetch(`${config.API_BASE_URL}/api/user/points`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -148,7 +148,7 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       setUserPoints(newPoints);
 
       // Update points in backend
-      await fetch('${config.API_BASE_URL}/api/user/points', {
+      await fetch(`${config.API_BASE_URL}/api/user/points`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -196,7 +196,7 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       setUserPoints(newPoints);
 
       // Update points in backend
-      await fetch('${config.API_BASE_URL}/api/user/points', {
+      await fetch(`${config.API_BASE_URL}/api/user/points`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

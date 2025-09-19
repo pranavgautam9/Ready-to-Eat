@@ -119,7 +119,7 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const restorePoints = async (pointsToRestore) => {
     try {
       // Get current user points
-      const response = await fetch('${config.API_BASE_URL}/api/user/points', {
+      const response = await fetch(`${config.API_BASE_URL}/api/user/points`, {
         method: 'GET',
         credentials: 'include',
         headers: {

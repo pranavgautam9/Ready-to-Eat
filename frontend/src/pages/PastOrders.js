@@ -32,7 +32,7 @@ const PastOrders = () => {
   const fetchPastOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('${config.API_BASE_URL}/api/admin/orders/past', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/orders/past`, {
         credentials: 'include'
       });
       

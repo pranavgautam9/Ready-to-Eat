@@ -32,7 +32,7 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('${config.API_BASE_URL}/api/admin/orders', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/orders`, {
         credentials: 'include'
       });
       

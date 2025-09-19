@@ -106,7 +106,7 @@ const Checkout = ({ cart, onUpdateCart }) => {
         payment_details: paymentDetails
       };
 
-      const response = await fetch('${config.API_BASE_URL}/api/orders', {
+      const response = await fetch(`${config.API_BASE_URL}/api/orders`, {
         method: 'POST',
         credentials: 'include', // Include cookies for session
         headers: {

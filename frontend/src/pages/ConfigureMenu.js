@@ -52,7 +52,7 @@ const ConfigureMenu = () => {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const response = await fetch('${config.API_BASE_URL}/api/admin/menu', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/menu`, {
         credentials: 'include'
       });
       
@@ -121,7 +121,7 @@ const ConfigureMenu = () => {
 
   const addNewItem = async () => {
     try {
-      const response = await fetch('${config.API_BASE_URL}/api/admin/menu', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/menu`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ const ConfigureMenu = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('${config.API_BASE_URL}/api/admin/upload-image', {
+      const response = await fetch(`${config.API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         credentials: 'include',
         body: formData
