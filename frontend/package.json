@@ -2,7 +2,7 @@
   "name": "ready-to-eat-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://yourusername.github.io/Ready-to-Eat",
+  "homepage": "https://pranavgautam.com/Ready-to-Eat",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "react-scripts build",
+    "build:ci": "CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -24,7 +25,12 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-unused-vars": "warn",
+      "no-template-curly-in-string": "warn",
+      "react-hooks/exhaustive-deps": "warn"
+    }
   },
   "browserslist": {
     "production": [
