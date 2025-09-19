@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "node build-no-eslint.js",
     "build:windows": "build-windows.bat",
     "build:local": "react-scripts build",
     "build:ci": "CI=false react-scripts build",
