@@ -37,22 +37,20 @@ This guide will help you deploy your Ready-to-Eat application completely free us
 In your Railway project, go to Variables tab and add:
 
 ```
-SECRET_KEY=your-super-secret-key-change-this-in-production
-DATABASE_URL=mysql+pymysql://root:YOUR_MYSQL_PASSWORD@mysql.railway.internal:3306/railway
+SECRET_KEY=TKlF89Fv_4vIKwQ4ekMXEOm6mouSbvOeidk7SqU1rcA
+MYSQL_URL=mysql://root:qfFURhHCEXqEmKzOZwfyMsTSGXOunQkO@tramway.proxy.rlwy.net:20831/railway
 FLASK_ENV=production
 FLASK_DEBUG=False
-PORT=5000
 ```
 
-**Note**: Replace `YOUR_MYSQL_PASSWORD` with your actual MySQL password from Railway. The standard Railway MySQL connection details are:
 - **Host**: `mysql.railway.internal`
 - **Port**: `3306`
 - **Database**: `railway`
 - **Username**: `root`
-- **Password**: (Get this from your MySQL service variables in Railway)
+- **Password**: qfFURhHCEXqEmKzOZwfyMsTSGXOunQkO
 
 ### 1.5 Get Backend URL
-1. After deployment completes, Railway will provide a URL like: `https://your-app-name.railway.app`
+1. After deployment completes, Railway will provide a URL: `ready-to-eat-production.up.railway.app`
 2. Copy this URL - you'll need it for frontend configuration
 
 ## Step 2: Update Frontend Configuration
@@ -67,7 +65,7 @@ const config = {
     API_BASE_URL: 'http://localhost:5000',
   },
   production: {
-    API_BASE_URL: 'https://your-app-name.railway.app', // Your actual Railway URL
+    API_BASE_URL: 'ready-to-eat-production.up.railway.app', // Your actual Railway URL
   }
 };
 ```
@@ -79,8 +77,8 @@ const config = {
 ```python
 allowed_origins = [
     'http://localhost:3000',
-    'https://yourusername.github.io',  # Your GitHub Pages URL
-    'https://yourdomain.com'  # Your custom domain
+    'https://pranavgautam9.github.io',  # Your GitHub Pages URL
+    'https://pranavgautam.com'  # Your custom domain
 ]
 ```
 
