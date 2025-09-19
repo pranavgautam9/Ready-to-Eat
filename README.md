@@ -202,22 +202,11 @@ The frontend automatically connects to `http://localhost:5000` for API calls. To
 
 ## 🚀 Deployment
 
-This application can be deployed completely free using:
+This application is deployed completely free using:
 
 - **Frontend**: GitHub Pages
 - **Backend**: Railway (free tier)
 - **Database**: Railway MySQL (free tier)
-
-For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
-
-### Quick Deploy Steps:
-
-1. **Backend**: Deploy to Railway with MySQL database
-2. **Frontend**: Enable GitHub Pages with GitHub Actions
-3. **Configuration**: Update API URLs and CORS settings
-4. **Database**: Run setup script to initialize tables
-
-**Total Cost**: $0/month! 🎉
 
 ## 📄 License
 

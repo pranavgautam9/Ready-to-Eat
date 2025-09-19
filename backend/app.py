@@ -19,8 +19,8 @@ def create_app():
     # Enable CORS - allow both development and production origins
     allowed_origins = [
         'http://localhost:3000',
-        'https://pranavgautam9.github.io',  # Replace with your actual GitHub Pages URL
-        'https://pranavgautam.com'  # Replace with your custom domain if you have one
+        'https://pranavgautam.com',  # Your custom domain
+        'https://pranavgautam.com/Ready-to-Eat'  # Your app's full URL
     ]
     CORS(app, supports_credentials=True, origins=allowed_origins)
     
