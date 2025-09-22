@@ -19,6 +19,7 @@ import Frooti from '../assets/Frooti.jpg';
 
 // Image mapping for database paths to imported images
 const imageMap = {
+  // Old paths (for backward compatibility)
   '/src/assets/Samosa.jpg': Samosa,
   '/src/assets/Kachori.jpg': Kachori,
   '/src/assets/Aloo Parantha.jpg': AlooParantha,
@@ -33,6 +34,28 @@ const imageMap = {
   '/src/assets/Kurkure.jpg': Kurkure,
   '/src/assets/Coca Cola.jpg': CocaCola,
   '/src/assets/Frooti.jpg': Frooti,
+  // New paths (production)
+  '/assets/Samosa.jpg': Samosa,
+  '/assets/Kachori.jpg': Kachori,
+  '/assets/Aloo Parantha.jpg': AlooParantha,
+  '/assets/Pav Bhaji.jpg': PavBhaji,
+  '/assets/Chole Bhature.jpg': CholeBhature,
+  '/assets/Veg Burger.jpg': VegBurger,
+  '/assets/Hakka Noodles.jpg': HakkaNoodles,
+  '/assets/Manchurian.jpg': Manchurian,
+  '/assets/Tea.JPG': Tea,
+  '/assets/Cold Coffee.jpg': ColdCoffee,
+  '/assets/Lays.jpg': Lays,
+  '/assets/Kurkure.jpg': Kurkure,
+  '/assets/Coca Cola.jpg': CocaCola,
+  '/assets/Frooti.jpg': Frooti,
+  // Reward items (using placeholder images for now)
+  '/assets/samosa-reward.jpg': Samosa,
+  '/assets/kachori-reward.jpg': Kachori,
+  '/assets/veg-burger-reward.jpg': VegBurger,
+  '/assets/hakka-noodles-reward.jpg': HakkaNoodles,
+  '/assets/combo1-reward.jpg': PavBhaji,
+  '/assets/combo2-reward.jpg': CholeBhature,
 };
 
 const FoodCard = ({ foodItem, onAddToCart, onRemoveFromCart, cartQuantity = 0 }) => {
