@@ -17,72 +17,42 @@ import Kurkure from '../assets/Kurkure.jpg';
 import CocaCola from '../assets/Coca Cola.jpg';
 import Frooti from '../assets/Frooti.jpg';
 
-// Image mapping for database paths to imported images
-const imageMap = {
-  // Old paths (for backward compatibility)
-  '/src/assets/Samosa.jpg': Samosa,
-  '/src/assets/Kachori.jpg': Kachori,
-  '/src/assets/Aloo Parantha.jpg': AlooParantha,
-  '/src/assets/Pav Bhaji.jpg': PavBhaji,
-  '/src/assets/Chole Bhature.jpg': CholeBhature,
-  '/src/assets/Veg Burger.jpg': VegBurger,
-  '/src/assets/Hakka Noodles.jpg': HakkaNoodles,
-  '/src/assets/Manchurian.jpg': Manchurian,
-  '/src/assets/Tea.JPG': Tea,
-  '/src/assets/Cold Coffee.jpg': ColdCoffee,
-  '/src/assets/Lays.jpg': Lays,
-  '/src/assets/Kurkure.jpg': Kurkure,
-  '/src/assets/Coca Cola.jpg': CocaCola,
-  '/src/assets/Frooti.jpg': Frooti,
-  // New paths (production)
-  '/assets/Samosa.jpg': Samosa,
-  '/assets/Kachori.jpg': Kachori,
-  '/assets/Aloo Parantha.jpg': AlooParantha,
-  '/assets/Pav Bhaji.jpg': PavBhaji,
-  '/assets/Chole Bhature.jpg': CholeBhature,
-  '/assets/Veg Burger.jpg': VegBurger,
-  '/assets/Hakka Noodles.jpg': HakkaNoodles,
-  '/assets/Manchurian.jpg': Manchurian,
-  '/assets/Tea.JPG': Tea,
-  '/assets/Cold Coffee.jpg': ColdCoffee,
-  '/assets/Lays.jpg': Lays,
-  '/assets/Kurkure.jpg': Kurkure,
-  '/assets/Coca Cola.jpg': CocaCola,
-  '/assets/Frooti.jpg': Frooti,
-  // Reward items (using placeholder images for now)
-  '/assets/samosa-reward.jpg': Samosa,
-  '/assets/kachori-reward.jpg': Kachori,
-  '/assets/veg-burger-reward.jpg': VegBurger,
-  '/assets/hakka-noodles-reward.jpg': HakkaNoodles,
-  '/assets/combo1-reward.jpg': PavBhaji,
-  '/assets/combo2-reward.jpg': CholeBhature,
+// Image mapping based on food item names
+const getImageByName = (name) => {
+  const imageMap = {
+    'Samosa': Samosa,
+    'Kachori': Kachori,
+    'Aloo Parantha': AlooParantha,
+    'Pav Bhaji': PavBhaji,
+    'Chole Bhature': CholeBhature,
+    'Veg Burger': VegBurger,
+    'Hakka Noodles': HakkaNoodles,
+    'Manchurian': Manchurian,
+    'Cup of Tea': Tea,
+    'Cold Coffee': ColdCoffee,
+    'Lays Chips': Lays,
+    'Kurkure': Kurkure,
+    'Coca Cola': CocaCola,
+    'Frooti': Frooti,
+    // Reward items
+    'Samosa (Reward)': Samosa,
+    'Kachori (Reward)': Kachori,
+    'Veg Burger (Reward)': VegBurger,
+    'Hakka Noodles (Reward)': HakkaNoodles,
+    'Pav Bhaji + Lays + Coca Cola (Reward)': PavBhaji,
+    'Chole Bhature + Kurkure + Frooti (Reward)': CholeBhature,
+  };
+  
+  return imageMap[name] || Samosa; // Default fallback
 };
 
 const FoodCard = ({ foodItem, onAddToCart, onRemoveFromCart, cartQuantity = 0 }) => {
   const [showExtraOption, setShowExtraOption] = useState(false);
 
-  // Handle image path - use image_path from database or fallback to image
+  // Handle image path - use food item name to get the correct imported image
   const getImageSrc = () => {
-    console.log(`Getting image for ${foodItem.name}:`, foodItem.image_path);
-    
-    if (foodItem.image_path) {
-      // If it's a full URL, use it directly
-      if (foodItem.image_path.startsWith('http')) {
-        return foodItem.image_path;
-      }
-      
-      // If it's a database path, map it to imported image
-      if (imageMap[foodItem.image_path]) {
-        console.log(`Found mapped image for ${foodItem.image_path}`);
-        return imageMap[foodItem.image_path];
-      }
-      
-      console.log(`No mapping found for ${foodItem.image_path}, using direct path`);
-      // If it's a local path, use it directly
-      return foodItem.image_path;
-    }
-    // Fallback to the old image property
-    return foodItem.image;
+    // Use the food item name to get the correct imported image
+    return getImageByName(foodItem.name);
   };
 
   const handleAddToCart = () => {
