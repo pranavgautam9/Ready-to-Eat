@@ -63,15 +63,21 @@ const FoodCard = ({ foodItem, onAddToCart, onRemoveFromCart, cartQuantity = 0 })
 
   // Handle image path - use image_path from database or fallback to image
   const getImageSrc = () => {
+    console.log(`Getting image for ${foodItem.name}:`, foodItem.image_path);
+    
     if (foodItem.image_path) {
       // If it's a full URL, use it directly
       if (foodItem.image_path.startsWith('http')) {
         return foodItem.image_path;
       }
+      
       // If it's a database path, map it to imported image
       if (imageMap[foodItem.image_path]) {
+        console.log(`Found mapped image for ${foodItem.image_path}`);
         return imageMap[foodItem.image_path];
       }
+      
+      console.log(`No mapping found for ${foodItem.image_path}, using direct path`);
       // If it's a local path, use it directly
       return foodItem.image_path;
     }
