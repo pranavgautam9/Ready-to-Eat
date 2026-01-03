@@ -13,16 +13,40 @@ def create_app():
     # Configure session persistence (15 days)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
     
+    # Configure session cookie settings for production
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    app.config['SESSION_COOKIE_SECURE'] = is_production  # HTTPS only in production
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    # For cross-origin requests (different domains), SameSite must be 'None'
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
+    # Set cookie domain to None to allow cross-origin cookies
+    app.config['SESSION_COOKIE_DOMAIN'] = None
+    
     # Initialize extensions
     db.init_app(app)
     
     # Enable CORS - allow both development and production origins
+    # Note: Origins should not include paths, just the domain
     allowed_origins = [
         'http://localhost:3000',
-        'https://pranavgautam.com',  # Your custom domain
-        'https://pranavgautam.com/Ready-to-Eat'  # Your app's full URL
+        'https://pranavgautam.com',  # Your custom domain (without path)
     ]
-    CORS(app, supports_credentials=True, origins=allowed_origins)
+    
+    # In production, also allow Railway backend domain for direct API access
+    if is_production:
+        # Allow requests from your frontend domain
+        CORS(app, supports_credentials=True, origins=allowed_origins)
+    else:
+        CORS(app, supports_credentials=True, origins=allowed_origins)
+    
+    # Add middleware to log requests (for debugging)
+    @app.before_request
+    def log_request_info():
+        from flask import request
+        print(f"🌐 Request: {request.method} {request.path}")
+        print(f"📍 Origin: {request.headers.get('Origin', 'No Origin header')}")
+        print(f"🍪 Cookies: {request.cookies}")
+        print(f"📋 Session: user_id={session.get('user_id')}, user_type={session.get('user_type')}")
     
     # Register blueprints
     app.register_blueprint(api, url_prefix='/api')

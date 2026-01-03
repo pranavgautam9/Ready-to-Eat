@@ -101,6 +101,10 @@ def login():
         session['user_type'] = 'user'
         session.permanent = True  # Enable session persistence (15 days)
         
+        # Debug logging
+        print(f"✅ Login successful - user_id: {user.id}, email: {user.email}")
+        print(f"🔐 Session set - user_id: {session.get('user_id')}, user_type: {session.get('user_type')}")
+        
         return jsonify({
             'message': 'Login successful',
             'user': user.to_dict()
@@ -158,6 +162,39 @@ def get_user_profile():
 @api.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'healthy', 'message': 'Ready-to-Eat API is running'}), 200
+
+@api.route('/debug/orders', methods=['GET'])
+def debug_orders():
+    """Debug endpoint to check orders and session status"""
+    try:
+        user_id = session.get('user_id')
+        user_type = session.get('user_type')
+        guest_id = session.get('guest_id')
+        
+        # Get all orders for user_id=1 (test user) regardless of session
+        test_orders = Order.query.filter_by(user_id=1).order_by(Order.order_time.desc()).all()
+        
+        # Get user info
+        test_user = User.query.filter_by(id=1).first()
+        
+        return jsonify({
+            'session': {
+                'user_id': user_id,
+                'user_type': user_type,
+                'guest_id': guest_id,
+                'session_keys': list(session.keys())
+            },
+            'test_user': test_user.to_dict() if test_user else None,
+            'orders_in_db_for_user_1': len(test_orders),
+            'orders': [order.to_dict() for order in test_orders],
+            'all_user_ids_with_orders': [o.user_id for o in Order.query.with_entities(Order.user_id).distinct().all()]
+        }), 200
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
 
 @api.route('/admin/login', methods=['POST'])
 def admin_login():
@@ -243,6 +280,10 @@ def get_orders():
         guest_id = session.get('guest_id')
         user_type = session.get('user_type')
         
+        # Debug logging
+        print(f"🔍 Orders request - user_id: {user_id}, user_type: {user_type}, guest_id: {guest_id}")
+        print(f"🔍 Session keys: {list(session.keys())}")
+        
         if user_type == 'guest' and guest_id:
             # For guest users, we'll return empty orders for now
             # In a real app, you might want to store guest orders temporarily
@@ -251,13 +292,25 @@ def get_orders():
         elif user_type == 'user' and user_id:
             # Get all orders for the authenticated user
             orders = Order.query.filter_by(user_id=user_id).order_by(Order.order_time.desc()).all()
+            print(f"📦 Found {len(orders)} orders for user_id {user_id}")
             return jsonify({'orders': [order.to_dict() for order in orders]}), 200
         
         else:
-            return jsonify({'error': 'Not authenticated'}), 401
+            print(f"❌ Not authenticated - user_id: {user_id}, user_type: {user_type}")
+            return jsonify({
+                'error': 'Not authenticated',
+                'debug': {
+                    'user_id': user_id,
+                    'user_type': user_type,
+                    'guest_id': guest_id,
+                    'session_keys': list(session.keys())
+                }
+            }), 401
             
     except Exception as e:
         print(f"Get orders error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': 'Failed to fetch orders'}), 500
 
 @api.route('/orders', methods=['POST'])
