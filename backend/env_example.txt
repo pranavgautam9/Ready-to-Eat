@@ -1,9 +1,4 @@
-# Database Configuration
 DATABASE_URL=mysql+pymysql://username:password@localhost/ready_to_eat
-
-# Flask Secret Key (change this in production)
 SECRET_KEY=your-secret-key-here
-
-# Flask Environment
 FLASK_ENV=development
 FLASK_DEBUG=True

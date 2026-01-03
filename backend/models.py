@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-import json
 
 db = SQLAlchemy()
 
@@ -110,8 +109,6 @@ class Order(db.Model):
     completed_time = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Relationships
     user = db.relationship('User', backref=db.backref('orders', lazy=True))
     order_items = db.relationship('OrderItem', backref='order', lazy=True, cascade='all, delete-orphan')
     

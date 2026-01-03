@@ -8,8 +8,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
   const [loading, setLoading] = useState(true);
   const [redeemedReward, setRedeemedReward] = useState(null);
   const { foodItems } = useFoodItems();
-
-  // Reward tiers configuration
   const rewardTiers = [
     {
       id: 'tier1',
@@ -61,8 +59,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       ]
     }
   ];
-
-  // Fetch user points
   useEffect(() => {
     const fetchUserPoints = async () => {
       try {
@@ -78,11 +74,9 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
           const data = await response.json();
           setUserPoints(data.points || 0);
         } else {
-          console.error('Failed to fetch user points');
           setUserPoints(0);
         }
       } catch (error) {
-        console.error('Error fetching user points:', error);
         setUserPoints(0);
       } finally {
         setLoading(false);
@@ -91,11 +85,8 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
 
     fetchUserPoints();
   }, []);
-
-  // Check if user has redeemed any reward
   useEffect(() => {
     const checkRedeemedReward = () => {
-      // Check if any reward item is in cart
       for (const tier of rewardTiers) {
         for (const item of tier.items) {
           const cartKey = `${item.id}`;
@@ -110,8 +101,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
 
     checkRedeemedReward();
   }, [cart]);
-
-  // Calculate and update cart count whenever cart changes
   useEffect(() => {
     const total = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
     if (onCartUpdate) {
@@ -123,31 +112,22 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
     if (userPoints < tier.points || redeemedReward) return;
 
     try {
-      // Add reward item to cart (cart is an object with keys like "1", "2", etc.)
       const updatedCart = { ...cart };
-      
-      // Add the reward item as a single cart item
       const cartKey = `${item.id}`;
       updatedCart[cartKey] = {
         foodId: item.id,
         name: item.name,
-        price: 0, // Free for rewards
-        quantity: item.quantity, // Use the actual quantity from the reward item (2x for Samosa/Kachori)
-        image: '/assets/samosa.jpg', // Default image, will be updated when food items are loaded
+        price: 0,
+        quantity: item.quantity,
+        image: '/assets/samosa.jpg',
         isReward: true,
         rewardId: item.rewardId,
         rewardTier: tier.id,
         rewardPoints: tier.points
       };
-
-      // Update cart
       onUpdateCart(updatedCart);
-
-      // Update user points
       const newPoints = userPoints - tier.points;
       setUserPoints(newPoints);
-
-      // Update points in backend
       await fetch(`${config.API_BASE_URL}/api/user/points`, {
         method: 'PUT',
         credentials: 'include',
@@ -158,7 +138,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       });
 
     } catch (error) {
-      console.error('Error redeeming reward:', error);
     }
   };
 
@@ -166,7 +145,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
     if (!redeemedReward || redeemedReward !== rewardId) return;
 
     try {
-      // Find the reward item in cart
       let rewardItem = null;
       let rewardTier = null;
       
@@ -182,13 +160,9 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       }
 
       if (!rewardItem || !rewardTier) return;
-
-      // Remove reward item from cart
       const updatedCart = { ...cart };
       const cartKey = `${rewardItem.id}`;
       delete updatedCart[cartKey];
-
-      // Update cart
       onUpdateCart(updatedCart);
 
       // Restore user points
@@ -206,7 +180,6 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
       });
 
     } catch (error) {
-      console.error('Error removing reward:', error);
     }
   };
 

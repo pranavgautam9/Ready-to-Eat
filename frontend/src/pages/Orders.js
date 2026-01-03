@@ -58,12 +58,9 @@ const Orders = () => {
         
         setOrders(formattedOrders);
       } else {
-        const errorText = await response.text();
-        console.error('Failed to fetch orders:', response.status, errorText);
         setOrders([]);
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
       setOrders([]);
     } finally {
       setLoading(false);
@@ -125,7 +122,6 @@ const Orders = () => {
           }
         }
       } catch (error) {
-        console.error('Error updating order statuses:', error);
       }
     };
 

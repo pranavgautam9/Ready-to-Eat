@@ -1,20 +1,17 @@
 from flask import Blueprint, request, jsonify, session
 from models import db, User, Admin, Order, OrderItem, FoodItem
-from werkzeug.security import generate_password_hash
 import re
 import uuid
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 api = Blueprint('api', __name__)
 
 def validate_email(email):
-    """Validate email format"""
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
 def validate_password(password):
-    """Validate password strength"""
     if len(password) < 8:
         return False, "Password must be at least 8 characters long"
     if not re.search(r'[A-Z]', password):
@@ -31,31 +28,19 @@ def validate_password(password):
 def register():
     try:
         data = request.get_json()
-        
-        # Validate required fields
         required_fields = ['first_name', 'last_name', 'email', 'password', 'mobile']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({'error': f'{field.replace("_", " ").title()} is required'}), 400
-        
-        # Validate email format
         if not validate_email(data['email']):
             return jsonify({'error': 'Invalid email format'}), 400
-        
-        # Validate password strength
         is_valid_password, password_message = validate_password(data['password'])
         if not is_valid_password:
             return jsonify({'error': password_message}), 400
-        
-        # Validate mobile number (basic validation)
         if not re.match(r'^\d{10,15}$', data['mobile']):
             return jsonify({'error': 'Invalid mobile number format'}), 400
-        
-        # Check if user already exists
         if User.query.filter_by(email=data['email']).first():
             return jsonify({'error': 'User with this email already exists'}), 409
-        
-        # Create new user
         user = User(
             first_name=data['first_name'],
             last_name=data['last_name'],
@@ -66,11 +51,9 @@ def register():
         
         db.session.add(user)
         db.session.commit()
-        
-        # Set session
         session['user_id'] = user.id
         session['user_type'] = 'user'
-        session.permanent = True  # Enable session persistence (15 days)
+        session.permanent = True
         
         return jsonify({
             'message': 'User registered successfully',
@@ -85,21 +68,14 @@ def register():
 def login():
     try:
         data = request.get_json()
-        
-        # Validate required fields
         if not data.get('email') or not data.get('password'):
             return jsonify({'error': 'Email and password are required'}), 400
-        
-        # Find user by email
         user = User.query.filter_by(email=data['email']).first()
-        
         if not user or not user.check_password(data['password']):
             return jsonify({'error': 'Invalid email or password'}), 401
-        
-        # Set session with persistence for regular users
         session['user_id'] = user.id
         session['user_type'] = 'user'
-        session.permanent = True  # Enable session persistence (15 days)
+        session.permanent = True
         
         return jsonify({
             'message': 'Login successful',
@@ -107,12 +83,10 @@ def login():
         }), 200
         
     except Exception as e:
-        print(f"Login error: {str(e)}")  # Add logging for debugging
         return jsonify({'error': f'Login failed: {str(e)}'}), 500
 
 @api.route('/logout', methods=['POST'])
 def logout():
-    # Clear all session data
     session.pop('user_id', None)
     session.pop('admin_id', None)
     session.pop('guest_id', None)
@@ -133,15 +107,14 @@ def get_user_profile():
         return jsonify({'user': admin.to_dict()}), 200
     
     elif user_type == 'guest' and guest_id:
-        # Return guest user data
         guest_user = {
             'id': guest_id,
             'first_name': 'Guest',
             'last_name': 'User',
             'email': f'{guest_id}@guest.local',
             'mobile': 'N/A',
-            'created_at': datetime.utcnow().isoformat(),
-            'updated_at': datetime.utcnow().isoformat(),
+            'created_at': datetime.now(timezone.utc).isoformat(),
+            'updated_at': datetime.now(timezone.utc).isoformat(),
             'is_guest': True
         }
         return jsonify({'user': guest_user}), 200
@@ -163,21 +136,14 @@ def health_check():
 def admin_login():
     try:
         data = request.get_json()
-        
-        # Validate required fields
         if not data.get('username') or not data.get('password'):
             return jsonify({'error': 'Username and password are required'}), 400
-        
-        # Find admin by username
         admin = Admin.query.filter_by(username=data['username']).first()
-        
         if not admin or not admin.check_password(data['password']):
             return jsonify({'error': 'Invalid username or password'}), 401
-        
-        # Set admin session with longer expiry
         session['admin_id'] = admin.id
         session['user_type'] = 'admin'
-        session.permanent = True  # Enable session persistence
+        session.permanent = True
         
         return jsonify({
             'message': 'Admin login successful',
@@ -185,29 +151,23 @@ def admin_login():
         }), 200
         
     except Exception as e:
-        print(f"Admin login error: {str(e)}")
         return jsonify({'error': f'Admin login failed: {str(e)}'}), 500
 
 @api.route('/guest/access', methods=['POST'])
 def guest_access():
     try:
-        # Generate unique guest ID
         guest_id = f"guest_{uuid.uuid4().hex[:8]}"
-        
-        # Create guest session (will be destroyed when browser closes)
         session['guest_id'] = guest_id
         session['user_type'] = 'guest'
-        session.permanent = False  # Session ends when browser closes
-        
-        # Create temporary guest user data
+        session.permanent = False
         guest_user = {
             'id': guest_id,
             'first_name': 'Guest',
             'last_name': 'User',
             'email': f'{guest_id}@guest.local',
             'mobile': 'N/A',
-            'created_at': datetime.utcnow().isoformat(),
-            'updated_at': datetime.utcnow().isoformat(),
+            'created_at': datetime.now(timezone.utc).isoformat(),
+            'updated_at': datetime.now(timezone.utc).isoformat(),
             'is_guest': True
         }
         
@@ -217,7 +177,6 @@ def guest_access():
         }), 200
         
     except Exception as e:
-        print(f"Guest access error: {str(e)}")
         return jsonify({'error': f'Guest access failed: {str(e)}'}), 500
 
 @api.route('/admin/profile', methods=['GET'])
@@ -234,22 +193,16 @@ def get_admin_profile():
     
     return jsonify({'admin': admin.to_dict()}), 200
 
-# Order-related endpoints
 @api.route('/orders', methods=['GET'])
 def get_orders():
-    """Get all orders for the current user"""
     try:
         user_id = session.get('user_id')
         guest_id = session.get('guest_id')
         user_type = session.get('user_type')
         
         if user_type == 'guest' and guest_id:
-            # For guest users, we'll return empty orders for now
-            # In a real app, you might want to store guest orders temporarily
             return jsonify({'orders': []}), 200
-        
         elif user_type == 'user' and user_id:
-            # Get all orders for the authenticated user
             orders = Order.query.filter_by(user_id=user_id).order_by(Order.order_time.desc()).all()
             return jsonify({'orders': [order.to_dict() for order in orders]}), 200
         
@@ -257,12 +210,10 @@ def get_orders():
             return jsonify({'error': 'Not authenticated'}), 401
             
     except Exception as e:
-        print(f"Get orders error: {str(e)}")
         return jsonify({'error': 'Failed to fetch orders'}), 500
 
 @api.route('/orders', methods=['POST'])
 def create_order():
-    """Create a new order"""
     try:
         user_id = session.get('user_id')
         guest_id = session.get('guest_id')
@@ -272,21 +223,12 @@ def create_order():
             return jsonify({'error': 'Not authenticated'}), 401
         
         data = request.get_json()
-        
-        # Validate required fields
         required_fields = ['items', 'total_amount', 'tax_amount', 'grand_total', 'points_earned', 'estimated_time', 'payment_method']
         for field in required_fields:
             if field not in data:
                 return jsonify({'error': f'{field.replace("_", " ").title()} is required'}), 400
-        
-        # Generate unique order number
         order_number = f"ORD-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
-        
-        # For guest users, we'll use a temporary user_id
-        # In a real app, you might want to handle guest orders differently
-        actual_user_id = user_id if user_type == 'user' else 1  # Using test user for guests
-        
-        # Create the order
+        actual_user_id = user_id if user_type == 'user' else 1
         order = Order(
             order_number=order_number,
             user_id=actual_user_id,
@@ -300,9 +242,7 @@ def create_order():
         )
         
         db.session.add(order)
-        db.session.flush()  # Get the order ID
-        
-        # Create order items
+        db.session.flush()
         for item in data['items']:
             food_item = FoodItem.query.get(item['foodId'])
             if not food_item:
@@ -318,8 +258,6 @@ def create_order():
                 item_total=food_item.price * item['quantity']
             )
             db.session.add(order_item)
-        
-        # Update user's total points if this is a user order (not guest)
         if user_type == 'user' and user_id:
             user = User.query.get(user_id)
             if user:
@@ -335,12 +273,10 @@ def create_order():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Create order error: {str(e)}")
         return jsonify({'error': 'Failed to create order'}), 500
 
 @api.route('/orders/<int:order_id>', methods=['GET'])
 def get_order(order_id):
-    """Get a specific order by ID"""
     try:
         user_id = session.get('user_id')
         guest_id = session.get('guest_id')
@@ -348,8 +284,6 @@ def get_order(order_id):
         
         if user_type not in ['user', 'guest']:
             return jsonify({'error': 'Not authenticated'}), 401
-        
-        # For guest users, we'll use a temporary user_id
         actual_user_id = user_id if user_type == 'user' else 1
         
         order = Order.query.filter_by(id=order_id, user_id=actual_user_id).first()
@@ -359,12 +293,10 @@ def get_order(order_id):
         return jsonify({'order': order.to_dict()}), 200
         
     except Exception as e:
-        print(f"Get order error: {str(e)}")
         return jsonify({'error': 'Failed to fetch order'}), 500
 
 @api.route('/orders/<int:order_id>/status', methods=['PUT'])
 def update_order_status(order_id):
-    """Update order status (for admin use)"""
     try:
         admin_id = session.get('admin_id')
         user_type = session.get('user_type')
@@ -383,12 +315,10 @@ def update_order_status(order_id):
             return jsonify({'error': 'Order not found'}), 404
         
         order.status = new_status
-        
-        # Set timestamps based on status
         if new_status == 'ready' and not order.ready_time:
-            order.ready_time = datetime.utcnow()
+            order.ready_time = datetime.now(timezone.utc)
         elif new_status == 'completed' and not order.completed_time:
-            order.completed_time = datetime.utcnow()
+            order.completed_time = datetime.now(timezone.utc)
         
         db.session.commit()
         
@@ -399,38 +329,27 @@ def update_order_status(order_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Update order status error: {str(e)}")
         return jsonify({'error': 'Failed to update order status'}), 500
 
 @api.route('/orders/update-status', methods=['POST'])
 def update_order_statuses():
-    """Update order statuses based on time (can be called by frontend or scheduled job)"""
     try:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         updated_orders = []
-        
-        # Get all current orders
         current_orders = Order.query.filter_by(status='current').all()
-        
         for order in current_orders:
             order_time = order.order_time
             elapsed_minutes = (current_time - order_time).total_seconds() / 60
-            
-            # If elapsed time >= estimated time, mark as ready
             if elapsed_minutes >= order.estimated_time:
                 order.status = 'ready'
                 if not order.ready_time:
                     order.ready_time = current_time
                 order.updated_at = current_time
                 updated_orders.append(order.id)
-        
-        # Get all ready orders that should become past orders (1 hour after ready)
         ready_orders = Order.query.filter_by(status='ready').all()
-        
         for order in ready_orders:
             if order.ready_time:
                 time_since_ready = (current_time - order.ready_time).total_seconds() / 60
-                # Move to past orders after 1 hour of being ready
                 if time_since_ready >= 60:
                     order.status = 'completed'
                     if not order.completed_time:
@@ -452,22 +371,16 @@ def update_order_statuses():
             
     except Exception as e:
         db.session.rollback()
-        print(f"Update order statuses error: {str(e)}")
         return jsonify({'error': 'Failed to update order statuses'}), 500
 
-# Admin order management endpoints
 @api.route('/admin/orders', methods=['GET'])
 def get_all_orders():
-    """Get all orders for admin management"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
             
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
-        # Get current and ready orders (not completed) with user information
         orders = db.session.query(Order, User).join(User, Order.user_id == User.id).filter(Order.status.in_(['current', 'ready'])).order_by(Order.order_time.desc()).all()
         
         orders_data = []
@@ -479,14 +392,11 @@ def get_all_orders():
         return jsonify({'orders': orders_data}), 200
         
     except Exception as e:
-        print(f"Get all orders error: {str(e)}")
         return jsonify({'error': 'Failed to fetch orders'}), 500
 
 @api.route('/admin/orders/<int:order_id>/status', methods=['PUT'])
 def update_order_status_admin(order_id):
-    """Update order status (admin only)"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
             
@@ -501,20 +411,13 @@ def update_order_status_admin(order_id):
             
         if new_status not in ['current', 'ready', 'completed']:
             return jsonify({'error': 'Invalid status. Must be current, ready, or completed'}), 400
-            
-        # Find the order
         order = Order.query.get(order_id)
         if not order:
             return jsonify({'error': 'Order not found'}), 404
-            
-        # Update the order status
         old_status = order.status
         order.status = new_status
-        
-        # Set ready_time if marking as ready
         if new_status == 'ready' and old_status == 'current':
             order.ready_time = datetime.now()
-        # Set completed_time if marking as completed
         elif new_status == 'completed' and old_status == 'ready':
             order.completed_time = datetime.now()
             
@@ -527,21 +430,15 @@ def update_order_status_admin(order_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Update order status admin error: {str(e)}")
         return jsonify({'error': 'Failed to update order status'}), 500
 
 @api.route('/admin/orders/past', methods=['GET'])
 def get_past_orders():
-    """Get all completed orders for admin (past orders)"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
-        # Get only completed orders with user information
         orders = db.session.query(Order, User).join(User, Order.user_id == User.id).filter(Order.status == 'completed').order_by(Order.completed_time.desc()).all()
         
         orders_data = []
@@ -553,53 +450,36 @@ def get_past_orders():
         return jsonify({'orders': orders_data}), 200
         
     except Exception as e:
-        print(f"Get past orders error: {str(e)}")
         return jsonify({'error': 'Failed to fetch past orders'}), 500
 
-# Menu management endpoints
 @api.route('/admin/menu', methods=['GET'])
 def get_menu_items():
-    """Get all menu items for admin management (excluding reward items)"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
-        # Get all menu items excluding reward items (price > 0)
         menu_items = FoodItem.query.filter(FoodItem.price > 0).order_by(FoodItem.name).all()
         
         return jsonify({'menu_items': [item.to_dict() for item in menu_items]}), 200
         
     except Exception as e:
-        print(f"Get menu items error: {str(e)}")
         return jsonify({'error': 'Failed to fetch menu items'}), 500
 
 @api.route('/admin/menu/<int:item_id>', methods=['PUT'])
 def update_menu_item(item_id):
-    """Update menu item price"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
         data = request.get_json()
         new_price = data.get('price')
-        
         if not new_price or new_price < 0:
             return jsonify({'error': 'Valid price is required'}), 400
-            
-        # Find the menu item
         menu_item = FoodItem.query.get(item_id)
         if not menu_item:
             return jsonify({'error': 'Menu item not found'}), 404
-            
-        # Update the price
         menu_item.price = new_price
         menu_item.updated_at = datetime.now()
         db.session.commit()
@@ -611,33 +491,21 @@ def update_menu_item(item_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Update menu item error: {str(e)}")
         return jsonify({'error': 'Failed to update menu item'}), 500
 
 @api.route('/admin/menu/<int:item_id>', methods=['DELETE'])
 def delete_menu_item(item_id):
-    """Delete menu item"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
-        # Find the menu item
         menu_item = FoodItem.query.get(item_id)
         if not menu_item:
             return jsonify({'error': 'Menu item not found'}), 404
-        
-        # Get the image path before deleting the item
         image_path = menu_item.image_path
-        
-        # Delete the menu item from database
         db.session.delete(menu_item)
         db.session.commit()
-        
-        # Delete the associated image file if it exists
         cleanup_image_file(image_path)
         
         return jsonify({
@@ -646,33 +514,24 @@ def delete_menu_item(item_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Delete menu item error: {str(e)}")
         return jsonify({'error': 'Failed to delete menu item'}), 500
 
 @api.route('/admin/menu', methods=['POST'])
 def add_menu_item():
-    """Add new menu item"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
         data = request.get_json()
         name = data.get('name')
         price = data.get('price')
         image_path = data.get('image_path', '')
         has_extra_option = data.get('has_extra_option', False)
-        
         if not name or not price:
             return jsonify({'error': 'Name and price are required'}), 400
-            
         if price < 0:
             return jsonify({'error': 'Price must be non-negative'}), 400
-            
-        # Create new menu item
         new_item = FoodItem(
             name=name,
             price=price,
@@ -691,79 +550,50 @@ def add_menu_item():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Add menu item error: {str(e)}")
         return jsonify({'error': 'Failed to add menu item'}), 500
 
 def cleanup_image_file(image_path):
-    """Helper function to delete image files from both src and public folders"""
     if not image_path or image_path.startswith('/src/assets/') or image_path.startswith('http'):
         return  # Skip predefined images or external URLs
     
     try:
         import os
         filename = os.path.basename(image_path)
-        
-        # Delete from src/assets
         src_image_path = os.path.join('..', 'frontend', 'src', 'assets', filename)
         if os.path.exists(src_image_path):
             os.remove(src_image_path)
-            print(f"Deleted image from src: {src_image_path}")
-        
-        # Delete from public/assets
         public_image_path = os.path.join('..', 'frontend', 'public', 'assets', filename)
         if os.path.exists(public_image_path):
             os.remove(public_image_path)
-            print(f"Deleted image from public: {public_image_path}")
-            
-    except Exception as img_error:
-        print(f"Error deleting image file: {str(img_error)}")
-        # Don't raise exception, just log the error
+    except Exception:
+        pass
 
 @api.route('/admin/upload-image', methods=['POST'])
 def upload_image():
-    """Upload image file for menu items"""
     try:
-        # Check if user is authenticated as admin
         if 'admin_id' not in session or 'user_type' not in session:
             return jsonify({'error': 'Authentication required'}), 401
-            
         if session['user_type'] != 'admin':
             return jsonify({'error': 'Admin access required'}), 403
-            
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
-            
         file = request.files['file']
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
-            
-        # Check file type
         if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
             return jsonify({'error': 'Invalid file type. Only images are allowed.'}), 400
-            
-        # Generate unique filename
         import uuid
         import os
         filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
-        
-        # Create assets directory in src if it doesn't exist
         src_assets_dir = os.path.join('..', 'frontend', 'src', 'assets')
         os.makedirs(src_assets_dir, exist_ok=True)
-        
-        # Create assets directory in public if it doesn't exist
         public_assets_dir = os.path.join('..', 'frontend', 'public', 'assets')
         os.makedirs(public_assets_dir, exist_ok=True)
-        
-        # Save file to src assets folder (for imports)
         src_assets_path = os.path.join(src_assets_dir, filename)
         file.save(src_assets_path)
-        
-        # Copy file to public assets folder (for HTTP access)
         import shutil
         public_assets_path = os.path.join(public_assets_dir, filename)
         shutil.copy2(src_assets_path, public_assets_path)
-        
-        # Return the relative path for the frontend (public folder for HTTP access)
         image_path = f"/assets/{filename}"
         
         return jsonify({
@@ -772,34 +602,26 @@ def upload_image():
         }), 200
         
     except Exception as e:
-        print(f"Upload image error: {str(e)}")
         return jsonify({'error': 'Failed to upload image'}), 500
 
 @api.route('/user/points', methods=['GET'])
 def get_user_points():
-    """Get total points for the current user"""
     try:
         user_id = session.get('user_id')
         user_type = session.get('user_type')
         
         if user_type != 'user' or not user_id:
             return jsonify({'error': 'Not authenticated as user'}), 401
-        
-        # Get user from database
         user = User.query.get(user_id)
         if not user:
             return jsonify({'error': 'User not found'}), 404
-        
-        # Return the points from the users table
         return jsonify({'points': user.points or 0}), 200
         
     except Exception as e:
-        print(f"Error fetching user points: {str(e)}")
         return jsonify({'error': f'Failed to fetch points: {str(e)}'}), 500
 
 @api.route('/user/points', methods=['PUT'])
 def update_user_points():
-    """Update user points (for reward redemption)"""
     try:
         user_id = session.get('user_id')
         user_type = session.get('user_type')
@@ -812,8 +634,6 @@ def update_user_points():
         
         if new_points is None or new_points < 0:
             return jsonify({'error': 'Invalid points value'}), 400
-        
-        # Update user points in the database
         user = User.query.get(user_id)
         if not user:
             return jsonify({'error': 'User not found'}), 404
@@ -825,12 +645,10 @@ def update_user_points():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Update user points error: {str(e)}")
         return jsonify({'error': 'Failed to update user points'}), 500
 
 @api.route('/user/change-password', methods=['PUT'])
 def change_user_password():
-    """Change user password"""
     try:
         user_id = session.get('user_id')
         user_type = session.get('user_type')
@@ -847,17 +665,11 @@ def change_user_password():
         
         if len(new_password) < 6:
             return jsonify({'error': 'New password must be at least 6 characters long'}), 400
-        
-        # Get user from database
         user = User.query.get(user_id)
         if not user:
             return jsonify({'error': 'User not found'}), 404
-        
-        # Verify current password
         if not user.check_password(current_password):
             return jsonify({'error': 'Current password is incorrect'}), 400
-        
-        # Update password
         user.set_password(new_password)
         db.session.commit()
         
@@ -865,12 +677,10 @@ def change_user_password():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Change password error: {str(e)}")
         return jsonify({'error': f'Failed to change password: {str(e)}'}), 500
 
 @api.route('/forgot-password', methods=['POST'])
 def forgot_password():
-    """Send password reset email"""
     try:
         data = request.get_json()
         email = data.get('email')
@@ -880,40 +690,26 @@ def forgot_password():
         
         if not validate_email(email):
             return jsonify({'error': 'Invalid email format'}), 400
-        
-        # Check if user exists
         user = User.query.filter_by(email=email).first()
         if not user:
-            # Don't reveal if email exists or not for security
             return jsonify({'message': 'If an account with this email exists, a password reset link has been sent'}), 200
-        
-        # Generate reset token
         reset_token = secrets.token_urlsafe(32)
-        reset_token_expires = datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
-        
-        # Save reset token to user
+        reset_token_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         user.reset_token = reset_token
         user.reset_token_expires = reset_token_expires
         db.session.commit()
         
-        # In a real application, you would send an email here
-        # For now, we'll just return the token in the response for testing
-        print(f"Password reset token for {email}: {reset_token}")
-        print(f"Reset link: http://localhost:3000/reset-password?token={reset_token}")
-        
         return jsonify({
             'message': 'If an account with this email exists, a password reset link has been sent',
-            'reset_token': reset_token  # Remove this in production
+            'reset_token': reset_token
         }), 200
         
     except Exception as e:
         db.session.rollback()
-        print(f"Forgot password error: {str(e)}")
         return jsonify({'error': f'Failed to process password reset request: {str(e)}'}), 500
 
 @api.route('/reset-password', methods=['POST'])
 def reset_password():
-    """Reset password using token"""
     try:
         data = request.get_json()
         token = data.get('token')
@@ -924,13 +720,9 @@ def reset_password():
         
         if len(new_password) < 6:
             return jsonify({'error': 'New password must be at least 6 characters long'}), 400
-        
-        # Find user with valid token
         user = User.query.filter_by(reset_token=token).first()
-        if not user or user.reset_token_expires < datetime.utcnow():
+        if not user or user.reset_token_expires < datetime.now(timezone.utc):
             return jsonify({'error': 'Invalid or expired reset token'}), 400
-        
-        # Update password and clear reset token
         user.set_password(new_password)
         user.reset_token = None
         user.reset_token_expires = None
@@ -940,23 +732,19 @@ def reset_password():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Reset password error: {str(e)}")
         return jsonify({'error': f'Failed to reset password: {str(e)}'}), 500
 
 @api.route('/food-items', methods=['GET'])
 def get_food_items():
-    """Get all available food items (excluding reward items)"""
     try:
         food_items = FoodItem.query.filter_by(is_available=True, is_reward=False).all()
         return jsonify({'food_items': [item.to_dict() for item in food_items]}), 200
         
     except Exception as e:
-        print(f"Get food items error: {str(e)}")
         return jsonify({'error': 'Failed to fetch food items'}), 500
 
 @api.route('/admin/change-password', methods=['PUT'])
 def admin_change_password():
-    """Change admin password"""
     try:
         if 'admin_id' not in session or session.get('user_type') != 'admin':
             return jsonify({'error': 'Authentication required'}), 401
@@ -975,15 +763,14 @@ def admin_change_password():
         if not admin:
             return jsonify({'error': 'Admin not found'}), 404
         
-        if not check_password_hash(admin.password, current_password):
+        if not admin.check_password(current_password):
             return jsonify({'error': 'Current password is incorrect'}), 400
         
-        admin.password = generate_password_hash(new_password)
+        admin.set_password(new_password)
         db.session.commit()
         
         return jsonify({'message': 'Password changed successfully'}), 200
         
     except Exception as e:
         db.session.rollback()
-        print(f"Admin change password error: {str(e)}")
         return jsonify({'error': 'Failed to change password'}), 500

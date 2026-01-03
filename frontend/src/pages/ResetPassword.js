@@ -28,7 +28,6 @@ const ResetPassword = () => {
     setError('');
     setMessage('');
 
-    // Validation
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -65,7 +64,6 @@ const ResetPassword = () => {
         setError(data.error || 'Failed to reset password');
       }
     } catch (error) {
-      console.error('Error resetting password:', error);
       setError('An error occurred while resetting password');
     } finally {
       setLoading(false);

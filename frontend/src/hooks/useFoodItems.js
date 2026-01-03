@@ -26,7 +26,6 @@ const useFoodItems = () => {
         }
       } catch (err) {
         setError('Network error while fetching food items');
-        console.error('Error fetching food items:', err);
       } finally {
         setLoading(false);
       }
@@ -38,7 +37,6 @@ const useFoodItems = () => {
   return { foodItems, loading, error, refetch: () => {
     setLoading(true);
     setError(null);
-    // Re-trigger the useEffect by updating a dependency
     setFoodItems([]);
   }};
 };

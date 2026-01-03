@@ -18,12 +18,11 @@ const Checkout = ({ cart, onUpdateCart }) => {
     cardCvv: ''
   });
 
-  // Calculate estimated time based on current time
   useEffect(() => {
     const now = new Date();
     const currentHour = now.getHours();
 
-    let time = 15; // default
+    let time = 15;
 
     if (currentHour >= 8 && currentHour < 10) {
       time = 15;
@@ -40,7 +39,6 @@ const Checkout = ({ cart, onUpdateCart }) => {
     setEstimatedTime(time);
   }, []);
 
-  // Calculate cart totals
   const calculateTotals = () => {
     let subtotal = 0;
     const cartItems = [];
@@ -59,9 +57,9 @@ const Checkout = ({ cart, onUpdateCart }) => {
       }
     });
 
-    const tax = subtotal * 0.15; // 15% tax
-    const total = Math.floor(subtotal + tax); // Round down to nearest rupee
-    const points = Math.floor(subtotal / 10); // 1 point for every ₹10 spent (excluding tax)
+    const tax = subtotal * 0.15;
+    const total = Math.floor(subtotal + tax);
+    const points = Math.floor(subtotal / 10);
 
     return { cartItems, subtotal, tax, total, points };
   };
@@ -70,7 +68,6 @@ const Checkout = ({ cart, onUpdateCart }) => {
 
   const handlePaymentChange = (paymentMethod) => {
     setSelectedPayment(paymentMethod);
-    // Clear payment details when switching methods
     setPaymentDetails({
       paytmNumber: '',
       gpayUpi: '',
@@ -90,7 +87,6 @@ const Checkout = ({ cart, onUpdateCart }) => {
 
   const handlePay = async () => {
     try {
-      // Prepare order data
       const orderData = {
         items: Object.entries(cart).map(([key, item]) => ({
           foodId: item.foodId,
@@ -108,7 +104,7 @@ const Checkout = ({ cart, onUpdateCart }) => {
 
       const response = await fetch(`${config.API_BASE_URL}/api/orders`, {
         method: 'POST',
-        credentials: 'include', // Include cookies for session
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -118,16 +114,13 @@ const Checkout = ({ cart, onUpdateCart }) => {
       if (response.ok) {
         const data = await response.json();
         alert(`Order placed successfully! Order Number: ${data.order.order_number}`);
-        // Clear the cart
         onUpdateCart({});
-        // Redirect to orders page
         window.location.href = '/orders';
       } else {
         const errorData = await response.json();
         alert(`Failed to place order: ${errorData.error}`);
       }
     } catch (error) {
-      console.error('Error placing order:', error);
       alert('Failed to place order. Please try again.');
     }
   };
@@ -144,7 +137,7 @@ const Checkout = ({ cart, onUpdateCart }) => {
                paymentDetails.cardExpiry.length >= 5 && 
                paymentDetails.cardCvv.length >= 3;
       case 'cash':
-        return true; // No details needed for cash
+        return true;
       default:
         return false;
     }

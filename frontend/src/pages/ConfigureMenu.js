@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './ConfigureMenu.css';
-
-// Import all food images
 import Samosa from '../assets/Samosa.jpg';
 import Kachori from '../assets/Kachori.jpg';
 import AlooParantha from '../assets/Aloo Parantha.jpg';
@@ -18,7 +16,6 @@ import CocaCola from '../assets/Coca Cola.jpg';
 import Frooti from '../assets/Frooti.jpg';
 
 import config from '../config';
-// Map image paths to imported images
 const imageMap = {
   '/src/assets/Samosa.jpg': Samosa,
   '/src/assets/Kachori.jpg': Kachori,
@@ -66,7 +63,6 @@ const ConfigureMenu = () => {
       }
     } catch (err) {
       setError('Network error while fetching menu items');
-      console.error('Fetch menu items error:', err);
     } finally {
       setLoading(false);
     }
@@ -92,7 +88,6 @@ const ConfigureMenu = () => {
       }
     } catch (err) {
       setError('Network error while updating item price');
-      console.error('Update item price error:', err);
     }
   };
 
@@ -115,7 +110,6 @@ const ConfigureMenu = () => {
       }
     } catch (err) {
       setError('Network error while deleting item');
-      console.error('Delete item error:', err);
     }
   };
 
@@ -145,7 +139,6 @@ const ConfigureMenu = () => {
       }
     } catch (err) {
       setError('Network error while adding new item');
-      console.error('Add new item error:', err);
     }
   };
 
@@ -176,14 +169,10 @@ const ConfigureMenu = () => {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please select a valid image file');
       return;
     }
-
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError('Image size must be less than 5MB');
       return;
@@ -211,7 +200,6 @@ const ConfigureMenu = () => {
       }
     } catch (err) {
       setError('Network error while uploading image');
-      console.error('Upload image error:', err);
     } finally {
       setUploadingImage(false);
     }
@@ -288,8 +276,6 @@ const ConfigureMenu = () => {
                         src={newItem.image_path.startsWith('http') ? newItem.image_path : (imageMap[newItem.image_path] || newItem.image_path)} 
                         alt="Preview" 
                         onError={(e) => {
-                          console.log('Preview image error:', newItem.image_path);
-                          console.log('Trying to load from:', e.target.src);
                           e.target.style.display = 'none';
                         }}
                       />
@@ -331,7 +317,6 @@ const ConfigureMenu = () => {
                         src={item.image_path.startsWith('http') ? item.image_path : (imageMap[item.image_path] || item.image_path)} 
                         alt={item.name}
                         onError={(e) => {
-                          console.log('Image load error for:', item.name, 'path:', item.image_path);
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
                         }}

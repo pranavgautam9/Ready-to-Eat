@@ -22,11 +22,8 @@ import AdminNavigation from './components/AdminNavigation';
 import config from './config';
 import './App.css';
 
-// Create a wrapper component to access location
 function AppContent({ isAuthenticated, userType, user, admin, handleLogin, handleAdminLogin, handleGuestLogin, handleLogout, cartItemCount, setCartItemCount, cart, onUpdateCart }) {
   const location = useLocation();
-  
-  // Don't show navigation on splash screen
   const shouldShowNavigation = isAuthenticated && userType !== 'admin' && location.pathname !== '/';
   const shouldShowAdminNavigation = isAuthenticated && userType === 'admin' && location.pathname !== '/';
 
@@ -182,17 +179,14 @@ function App() {
   const [cart, setCart] = useState({});
 
   useEffect(() => {
-    // Check if user is already logged in
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
     try {
-      // First try to check if user is admin
       const adminResponse = await fetch(`${config.API_BASE_URL}/api/admin/profile`, {
         credentials: 'include'
       });
-      
       if (adminResponse.ok) {
         const adminData = await adminResponse.json();
         setAdmin(adminData.admin);
@@ -200,12 +194,9 @@ function App() {
         setIsAuthenticated(true);
         return;
       }
-      
-      // If not admin, check if regular user
       const response = await fetch(`${config.API_BASE_URL}/api/user/profile`, {
         credentials: 'include'
       });
-      
       if (response.ok) {
         const data = await response.json();
         if (data.user.is_guest) {
@@ -213,18 +204,12 @@ function App() {
           setUserType('guest');
           setIsAuthenticated(true);
         } else {
-          // This is a regular user
           setUser(data.user);
           setUserType('user');
           setIsAuthenticated(true);
         }
-      } else {
-        // User is not authenticated, which is normal for new visitors
-        console.log('User not authenticated, redirecting to login');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      // Network errors are common during development, don't treat as fatal
     } finally {
       setLoading(false);
     }
@@ -255,7 +240,6 @@ function App() {
         credentials: 'include'
       });
     } catch (error) {
-      console.error('Logout failed:', error);
     } finally {
       setUser(null);
       setAdmin(null);

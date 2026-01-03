@@ -46,7 +46,6 @@ const PastOrders = () => {
       }
     } catch (err) {
       setError('Network error while fetching past orders');
-      console.error('Fetch past orders error:', err);
     } finally {
       setLoading(false);
     }

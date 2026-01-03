@@ -26,7 +26,6 @@ const ChangePassword = () => {
     setLoading(true);
     setMessage('');
 
-    // Validation
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setMessage('New passwords do not match');
       setLoading(false);
@@ -61,7 +60,6 @@ const ChangePassword = () => {
           newPassword: '',
           confirmPassword: ''
         });
-        // Navigate back to account page after 2 seconds
         setTimeout(() => {
           navigate('/account');
         }, 2000);
@@ -69,7 +67,6 @@ const ChangePassword = () => {
         setMessage(data.error || 'Failed to change password');
       }
     } catch (error) {
-      console.error('Error changing password:', error);
       setMessage('An error occurred while changing password');
     } finally {
       setLoading(false);

@@ -10,13 +10,12 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const navigate = useNavigate();
   const { foodItems, loading } = useFoodItems();
 
-  // Calculate estimated time based on current time
   useEffect(() => {
     const now = new Date();
     const currentHour = now.getHours();
-    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const currentDay = now.getDay();
 
-    let time = 15; // default
+    let time = 15;
 
     if (currentHour >= 8 && currentHour < 10) {
       time = 15;
@@ -31,29 +30,24 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
     }
 
     setEstimatedTime(time);
-
-    // Check if checkout should be disabled
-    const isWeekend = currentDay === 0 || currentDay === 6; // Sunday or Saturday
+    const isWeekend = currentDay === 0 || currentDay === 6;
     const isOffHours = (currentHour >= 18 || currentHour < 8) && !isWeekend;
     
     setIsCheckoutDisabled(isWeekend || isOffHours);
   }, []);
 
-  // Calculate cart totals
   const calculateTotals = () => {
     let subtotal = 0;
     const cartItems = [];
 
     Object.entries(cart).forEach(([key, item]) => {
-      // Handle reward items (they have price 0 and are marked as isReward)
       if (item.isReward) {
         cartItems.push({
           ...item,
           total: 0,
           isReward: true,
-          id: item.foodId // Preserve the foodId for remove functionality
+          id: item.foodId
         });
-        // Reward items don't contribute to subtotal
       } else {
         const foodItem = foodItems.find(f => f.id === item.foodId);
         if (foodItem) {
@@ -69,9 +63,9 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
       }
     });
 
-    const tax = subtotal * 0.15; // 15% tax
-    const total = Math.floor(subtotal + tax); // Round down to nearest rupee
-    const points = Math.floor(subtotal / 10); // 1 point for every ₹10 spent (excluding tax)
+    const tax = subtotal * 0.15;
+    const total = Math.floor(subtotal + tax);
+    const points = Math.floor(subtotal / 10);
 
     return { cartItems, subtotal, tax, total, points };
   };
@@ -80,13 +74,11 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
 
   const updateQuantity = (foodId, newQuantity) => {
     if (newQuantity <= 0) {
-      // Remove item from cart
       const newCart = { ...cart };
       delete newCart[`${foodId}`];
       delete newCart[`${foodId}_extra`];
       onUpdateCart(newCart);
     } else {
-      // Update quantity
       const newCart = { ...cart };
       const key = `${foodId}`;
       if (newCart[key]) {
@@ -99,10 +91,8 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
   const removeItem = async (foodId, isReward = false) => {
     const newCart = { ...cart };
     if (isReward) {
-      // For reward items, find the correct cart key and restore points
       Object.keys(cart).forEach(key => {
         if (cart[key].foodId === foodId && cart[key].isReward) {
-          // Restore points for reward item
           if (cart[key].rewardPoints) {
             restorePoints(cart[key].rewardPoints);
           }
@@ -118,7 +108,6 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
 
   const restorePoints = async (pointsToRestore) => {
     try {
-      // Get current user points
       const response = await fetch(`${config.API_BASE_URL}/api/user/points`, {
         method: 'GET',
         credentials: 'include',
@@ -131,8 +120,6 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
         const data = await response.json();
         const currentPoints = data.points || 0;
         const newPoints = currentPoints + pointsToRestore;
-
-        // Update points in backend
         await fetch('${config.API_BASE_URL}/api/user/points', {
           method: 'PUT',
           credentials: 'include',
@@ -142,10 +129,8 @@ const Cart = ({ cart, onUpdateCart, onCartUpdate }) => {
           body: JSON.stringify({ points: newPoints })
         });
 
-        console.log(`Restored ${pointsToRestore} points. New total: ${newPoints}`);
       }
     } catch (error) {
-      console.error('Error restoring points:', error);
     }
   };
 

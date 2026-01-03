@@ -10,39 +10,21 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Configure session persistence (15 days)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
-    
-    # Configure session cookie settings for production
     is_production = os.environ.get('FLASK_ENV') == 'production'
-    app.config['SESSION_COOKIE_SECURE'] = is_production  # HTTPS only in production
+    app.config['SESSION_COOKIE_SECURE'] = is_production
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    # For cross-origin requests (different domains), SameSite must be 'None'
     app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
-    # Set cookie domain to None to allow cross-origin cookies
     app.config['SESSION_COOKIE_DOMAIN'] = None
-    
-    # Initialize extensions
     db.init_app(app)
-    
-    # Enable CORS - allow both development and production origins
-    # Note: Origins should not include paths, just the domain
     allowed_origins = [
         'http://localhost:3000',
-        'https://pranavgautam.com',  # Your custom domain (without path)
+        'https://pranavgautam.com',
     ]
-    
-    # Enable CORS for both development and production
     CORS(app, supports_credentials=True, origins=allowed_origins)
-    
-    # Register blueprints
     app.register_blueprint(api, url_prefix='/api')
-    
-    # Create database tables
     with app.app_context():
         db.create_all()
-        
-        # Add test user if it doesn't exist (matches database/setup.sql)
         test_user = User.query.filter_by(email='testuser@gmail.com').first()
         if not test_user:
             test_user = User(
@@ -55,9 +37,6 @@ def create_app():
             test_user.set_password('Password123!')
             db.session.add(test_user)
             db.session.commit()
-            print("Test user created successfully!")
-        
-        # Add test admin if it doesn't exist
         test_admin = Admin.query.filter_by(username='admin').first()
         if not test_admin:
             test_admin = Admin(
@@ -68,7 +47,6 @@ def create_app():
             test_admin.set_password('Admin123!')
             db.session.add(test_admin)
             db.session.commit()
-            print("Test admin created successfully!")
     
     @app.route('/')
     def index():

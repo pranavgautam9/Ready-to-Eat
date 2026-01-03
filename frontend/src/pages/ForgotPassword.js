@@ -30,7 +30,6 @@ const ForgotPassword = () => {
 
       if (response.ok) {
         setMessage(data.message);
-        // Show the reset token for testing (remove in production)
         if (data.reset_token) {
           setMessage(`${data.message}\n\nReset Token: ${data.reset_token}\n\nReset Link: https://pranavgautam.com/Ready-to-Eat/#/reset-password?token=${data.reset_token}`);
         }
@@ -38,7 +37,6 @@ const ForgotPassword = () => {
         setError(data.error || 'Failed to send reset email');
       }
     } catch (error) {
-      console.error('Error sending reset email:', error);
       setError('An error occurred while sending reset email');
     } finally {
       setLoading(false);

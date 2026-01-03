@@ -46,7 +46,6 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
       }
     } catch (err) {
       setError('Network error while fetching orders');
-      console.error('Fetch orders error:', err);
     } finally {
       setLoading(false);
     }
@@ -64,7 +63,6 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
       });
       
       if (response.ok) {
-        // Refresh orders after successful update
         await fetchOrders();
       } else {
         const errorData = await response.json();
@@ -72,14 +70,11 @@ const AdminHomeScreen = ({ admin, onLogout }) => {
       }
     } catch (err) {
       setError('Network error while updating order status');
-      console.error('Update order status error:', err);
     }
   };
 
   useEffect(() => {
     fetchOrders();
-    
-    // Refresh orders every 30 seconds
     const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
   }, []);
