@@ -8,5 +8,9 @@ const config = {
   }
 };
 
-// Always use production config for now to ensure it works
-export default config.production;
+// Automatically detect environment and use appropriate config
+const isDevelopment = process.env.NODE_ENV === 'development' || 
+                      window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1';
+
+export default isDevelopment ? config.development : config.production;
