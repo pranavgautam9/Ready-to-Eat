@@ -32,21 +32,8 @@ def create_app():
         'https://pranavgautam.com',  # Your custom domain (without path)
     ]
     
-    # In production, also allow Railway backend domain for direct API access
-    if is_production:
-        # Allow requests from your frontend domain
-        CORS(app, supports_credentials=True, origins=allowed_origins)
-    else:
-        CORS(app, supports_credentials=True, origins=allowed_origins)
-    
-    # Add middleware to log requests (for debugging)
-    @app.before_request
-    def log_request_info():
-        from flask import request
-        print(f"🌐 Request: {request.method} {request.path}")
-        print(f"📍 Origin: {request.headers.get('Origin', 'No Origin header')}")
-        print(f"🍪 Cookies: {request.cookies}")
-        print(f"📋 Session: user_id={session.get('user_id')}, user_type={session.get('user_type')}")
+    # Enable CORS for both development and production
+    CORS(app, supports_credentials=True, origins=allowed_origins)
     
     # Register blueprints
     app.register_blueprint(api, url_prefix='/api')

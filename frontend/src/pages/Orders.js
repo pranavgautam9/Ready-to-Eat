@@ -21,7 +21,6 @@ const Orders = () => {
   // Function to fetch orders from API
   const fetchOrders = async () => {
     try {
-      console.log('🔍 Fetching orders from API...');
       const response = await fetch(`${config.API_BASE_URL}/api/orders`, {
         method: 'GET',
         credentials: 'include', // Include cookies for session
@@ -30,17 +29,11 @@ const Orders = () => {
         },
       });
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response ok:', response.ok);
-
       if (response.ok) {
         const data = await response.json();
-        console.log('📦 Orders data received:', data);
-        console.log('📦 Orders array:', data.orders);
         
         // Check if orders exist and is an array
         if (!data.orders || !Array.isArray(data.orders)) {
-          console.warn('⚠️ No orders found or invalid format:', data.orders);
           setOrders([]);
           return;
         }
@@ -63,15 +56,14 @@ const Orders = () => {
           status: order.status === 'completed' ? 'past' : order.status
         }));
         
-        console.log('✨ Formatted orders:', formattedOrders);
         setOrders(formattedOrders);
       } else {
         const errorText = await response.text();
-        console.error('❌ Failed to fetch orders:', response.status, errorText);
+        console.error('Failed to fetch orders:', response.status, errorText);
         setOrders([]);
       }
     } catch (error) {
-      console.error('💥 Error fetching orders:', error);
+      console.error('Error fetching orders:', error);
       setOrders([]);
     } finally {
       setLoading(false);
