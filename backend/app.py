@@ -42,14 +42,15 @@ def create_app():
     with app.app_context():
         db.create_all()
         
-        # Add test user if it doesn't exist
-        test_user = User.query.filter_by(email='pranavgautam27@gmail.com').first()
+        # Add test user if it doesn't exist (matches database/setup.sql)
+        test_user = User.query.filter_by(email='testuser@gmail.com').first()
         if not test_user:
             test_user = User(
-                first_name='Pranav',
-                last_name='Gautam',
-                email='pranavgautam27@gmail.com',
-                mobile='3527406203'
+                first_name='Test',
+                last_name='User',
+                email='testuser@gmail.com',
+                mobile='7894561230',
+                points=13
             )
             test_user.set_password('Password123!')
             db.session.add(test_user)
