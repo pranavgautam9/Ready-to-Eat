@@ -38,15 +38,22 @@ VALUES (
 ) ON DUPLICATE KEY UPDATE id=id;
 
 -- Insert test user (password: Password123!)
-INSERT INTO users (first_name, last_name, email, password_hash, mobile, points) 
+INSERT INTO users (id, first_name, last_name, email, password_hash, mobile, points) 
 VALUES (
+    1,
     'Test', 
     'User', 
     'testuser@gmail.com', 
-    'scrypt:32768:8:1$sxom3w7g8btcuslM$b574f77077627053413ee6240a82b0e3a6fa18a1fd8734d9fc555306afb1ca3194bca6b47fe8bed3be3ddb166b930574a90cf6bb6ded5a249517d6c518f497b7', 
-    '9999999999',
-    0
-) ON DUPLICATE KEY UPDATE id=id;
+    'scrypt:32768:8:1$C1NUokd68WRmbpG8$2292233a3555dea87f2e5e9d9e2a9beb2351561edce321181e76adf54df0ae8133d91294e73e45a78556918e1a312efe9fa9814de4231961cf57c128ec0c7ecb', 
+    '7894561230',
+    13
+) ON DUPLICATE KEY UPDATE 
+    first_name = VALUES(first_name),
+    last_name = VALUES(last_name),
+    email = VALUES(email),
+    password_hash = VALUES(password_hash),
+    mobile = VALUES(mobile),
+    points = VALUES(points);
 
 -- Create orders table
 CREATE TABLE IF NOT EXISTS orders (
@@ -134,3 +141,50 @@ CREATE INDEX idx_orders_order_time ON orders(order_time);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_food_items_available ON food_items(is_available);
 CREATE INDEX idx_users_points ON users(points);
+
+-- Insert 2 orders for test user (user_id = 1)
+-- Order 1: Samosa (2x) + Tea (1x) = 15*2 + 10 = 40, tax (5%) = 2, total = 42, points = 4
+INSERT INTO orders (id, order_number, user_id, total_amount, tax_amount, grand_total, points_earned, estimated_time, status, payment_method, order_time) 
+VALUES (
+    1,
+    'ORD-20240101-ABC123',
+    1,
+    40.00,
+    2.00,
+    42.00,
+    4,
+    15,
+    'completed',
+    'cash',
+    DATE_SUB(NOW(), INTERVAL 2 DAY)
+) ON DUPLICATE KEY UPDATE id=id;
+
+-- Order 2: Veg Burger (1x) + Cold Coffee (2x) = 50 + 20*2 = 90, tax (5%) = 4.50, total = 94.50, points = 9
+INSERT INTO orders (id, order_number, user_id, total_amount, tax_amount, grand_total, points_earned, estimated_time, status, payment_method, order_time) 
+VALUES (
+    2,
+    'ORD-20240102-XYZ789',
+    1,
+    90.00,
+    4.50,
+    94.50,
+    9,
+    20,
+    'ready',
+    'card',
+    DATE_SUB(NOW(), INTERVAL 1 DAY)
+) ON DUPLICATE KEY UPDATE id=id;
+
+-- Insert order items for Order 1
+INSERT INTO order_items (id, order_id, food_id, food_name, food_price, quantity, has_extra, item_total) 
+VALUES 
+(1, 1, 1, 'Samosa', 15.00, 2, FALSE, 30.00),
+(2, 1, 9, 'Cup of Tea', 10.00, 1, FALSE, 10.00)
+ON DUPLICATE KEY UPDATE id=id;
+
+-- Insert order items for Order 2
+INSERT INTO order_items (id, order_id, food_id, food_name, food_price, quantity, has_extra, item_total) 
+VALUES 
+(3, 2, 6, 'Veg Burger', 50.00, 1, FALSE, 50.00),
+(4, 2, 10, 'Cold Coffee', 20.00, 2, FALSE, 40.00)
+ON DUPLICATE KEY UPDATE id=id;
