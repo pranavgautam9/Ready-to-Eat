@@ -11,7 +11,11 @@ def create_app():
     app.config.from_object(Config)
     
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
-    is_production = os.environ.get('FLASK_ENV') == 'production'
+    is_production = (
+        os.environ.get('FLASK_ENV') == 'production' or
+        os.environ.get('RAILWAY_ENVIRONMENT') is not None or
+        os.environ.get('RAILWAY_ENVIRONMENT_NAME') is not None
+    )
     app.config['SESSION_COOKIE_SECURE'] = is_production
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
