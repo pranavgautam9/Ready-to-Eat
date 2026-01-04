@@ -16,21 +16,49 @@ import CocaCola from '../assets/Coca Cola.jpg';
 import Frooti from '../assets/Frooti.jpg';
 
 import config from '../config';
-const imageMap = {
-  '/src/assets/Samosa.jpg': Samosa,
-  '/src/assets/Kachori.jpg': Kachori,
-  '/src/assets/Aloo Parantha.jpg': AlooParantha,
-  '/src/assets/Pav Bhaji.jpg': PavBhaji,
-  '/src/assets/Chole Bhature.jpg': CholeBhature,
-  '/src/assets/Veg Burger.jpg': VegBurger,
-  '/src/assets/Hakka Noodles.jpg': HakkaNoodles,
-  '/src/assets/Manchurian.jpg': Manchurian,
-  '/src/assets/Tea.JPG': Tea,
-  '/src/assets/Cold Coffee.jpg': ColdCoffee,
-  '/src/assets/Lays.jpg': Lays,
-  '/src/assets/Kurkure.jpg': Kurkure,
-  '/src/assets/Coca Cola.jpg': CocaCola,
-  '/src/assets/Frooti.jpg': Frooti,
+
+// Map images by food item name (works in both dev and production)
+const getImageByName = (name) => {
+  const imageMap = {
+    'Samosa': Samosa,
+    'Kachori': Kachori,
+    'Aloo Parantha': AlooParantha,
+    'Pav Bhaji': PavBhaji,
+    'Chole Bhature': CholeBhature,
+    'Veg Burger': VegBurger,
+    'Hakka Noodles': HakkaNoodles,
+    'Manchurian': Manchurian,
+    'Cup of Tea': Tea,
+    'Cold Coffee': ColdCoffee,
+    'Lays Chips': Lays,
+    'Kurkure': Kurkure,
+    'Coca Cola': CocaCola,
+    'Frooti': Frooti,
+  };
+  
+  return imageMap[name] || null;
+};
+
+// Helper function to get image source from item
+const getImageSrc = (item) => {
+  // If it's a full URL, use it directly
+  if (item.image_path && item.image_path.startsWith('http')) {
+    return item.image_path;
+  }
+  
+  // If it's a public assets path (like /assets/filename.jpg), use it
+  if (item.image_path && item.image_path.startsWith('/assets/')) {
+    return item.image_path;
+  }
+  
+  // Otherwise, try to get image by name
+  const imageByName = getImageByName(item.name);
+  if (imageByName) {
+    return imageByName;
+  }
+  
+  // Fallback: try to use image_path if it exists
+  return item.image_path || null;
 };
 
 const ConfigureMenu = () => {
@@ -273,7 +301,7 @@ const ConfigureMenu = () => {
                   {newItem.image_path && (
                     <div className="image-preview">
                       <img 
-                        src={newItem.image_path.startsWith('http') ? newItem.image_path : (imageMap[newItem.image_path] || newItem.image_path)} 
+                        src={newItem.image_path.startsWith('http') || newItem.image_path.startsWith('/assets/') ? newItem.image_path : (getImageByName(newItem.name) || newItem.image_path)} 
                         alt="Preview" 
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -312,17 +340,20 @@ const ConfigureMenu = () => {
               {menuItems.map((item) => (
                 <div key={item.id} className="menu-item-card">
                   <div className="item-image">
-                    {item.image_path ? (
-                      <img 
-                        src={item.image_path.startsWith('http') ? item.image_path : (imageMap[item.image_path] || item.image_path)} 
-                        alt={item.name}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div className="no-image" style={{ display: item.image_path ? 'none' : 'flex' }}>
+                    {(() => {
+                      const imageSrc = getImageSrc(item);
+                      return imageSrc ? (
+                        <img 
+                          src={imageSrc} 
+                          alt={item.name}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null;
+                    })()}
+                    <div className="no-image" style={{ display: getImageSrc(item) ? 'none' : 'flex' }}>
                       📷
                     </div>
                   </div>
