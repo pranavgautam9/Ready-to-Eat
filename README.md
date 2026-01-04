@@ -1,48 +1,171 @@
 # Ready-to-Eat 🍽️
 
-A comprehensive food ordering system designed specifically for Medi-Caps University cafeteria. This full-stack application provides a seamless ordering experience for students and faculty with features like real-time order tracking, rewards system, and admin management.
+**Ready-to-Eat** is a modern, full-stack food ordering platform designed exclusively for Medi-Caps University's cafeteria. Built with React.js and Flask, this application revolutionizes the campus dining experience by providing students and faculty with a seamless, digital solution for ordering food. From browsing the menu to tracking orders and earning rewards, Ready-to-Eat brings convenience and efficiency to campus dining.
+
+The platform features a beautiful, intuitive user interface with real-time order tracking, an integrated rewards system, and comprehensive admin tools for managing the cafeteria operations. Whether you're a student grabbing a quick snack between classes or an administrator managing daily operations, Ready-to-Eat streamlines the entire food ordering process.
 
 ## 🌟 Features
 
 ### For Students & Faculty
-- **User Authentication**: Secure login/register with password recovery
-- **Menu Browsing**: Browse available food items with images and pricing
-- **Order Management**: Add items to cart, place orders, and track order status
-- **Rewards System**: Earn points with every order and redeem rewards
-- **Order History**: View past orders and current order status
-- **Guest Access**: Order without registration (limited features)
-- **Responsive Design**: Works perfectly on desktop and mobile devices
+
+#### 1. Secure Authentication & Access
+
+The application provides multiple ways to access the platform, ensuring convenience while maintaining security:
+
+- **User Login**: Students and faculty can create accounts with email and password authentication
+- **Admin Login**: Dedicated login portal for cafeteria administrators
+- **Guest Access**: Quick access for users who want to place orders without creating an account (limited features)
+- **Password Recovery**: Secure password reset functionality via email
+- **Session Management**: Secure session-based authentication with automatic logout
+
+![Login Page](images/login-page.png)
+
+*The login page features a clean, modern design with separate tabs for user and admin access, along with a guest access option for quick ordering.*
+
+#### 2. Menu Browsing & Discovery
+
+Browse through the complete cafeteria menu with an intuitive, visually appealing interface:
+
+- **Visual Menu Display**: All food items are displayed in an attractive grid layout with high-quality images
+- **Detailed Information**: Each item shows its name, price, and appetizing photos
+- **Easy Navigation**: Simple, responsive design that works seamlessly on desktop and mobile devices
+- **Real-time Availability**: Menu items reflect current availability and pricing
+
+![Menu Page](images/menu-page.png)
+
+*The menu page showcases all available food items in a clean grid layout, making it easy for users to browse and select their favorite meals. Each item displays its price and an "Add to Cart" button for quick ordering.*
+
+#### 3. Shopping Cart & Order Management
+
+A comprehensive cart system that makes ordering simple and transparent:
+
+- **Add to Cart**: Easily add multiple items to your cart with quantity controls
+- **Cart Management**: Adjust quantities or remove items before checkout
+- **Order Summary**: View subtotal, taxes (15%), and total amount before placing an order
+- **Points Preview**: See how many reward points you'll earn before completing your order
+- **Estimated Ready Time**: Know exactly when your order will be ready (typically 45 minutes)
+- **Time-based Checkout**: Checkout is available Monday-Friday, 8:00 AM - 6:00 PM
+
+![Shopping Cart](images/cart-page.png)
+
+*The shopping cart page displays all selected items with quantity controls, order summary including taxes, and shows the points you'll earn. The checkout button is only available during business hours.*
+
+#### 4. Order History & Tracking
+
+Keep track of all your orders with detailed history and status updates:
+
+- **Past Orders**: View complete history of all your previous orders
+- **Order Details**: See order date, time, items, quantities, and total amount
+- **Order Status**: Track the current status of your orders (Pending, Preparing, Ready, Completed)
+- **Points Tracking**: View points earned for each completed order
+- **Order Identification**: Each order has a unique identifier (ORD1, ORD2, etc.) for easy reference
+
+![Past Orders](images/past-orders.png)
+
+*The Past Orders page displays your complete order history with order dates, items, quantities, and the points earned for each completed order. Each order is clearly labeled and organized for easy reference.*
+
+#### 5. Rewards & Points System
+
+An integrated loyalty program that rewards users for every order:
+
+- **Points Earning**: Earn points automatically with every order (points based on order value)
+- **Points Balance**: Always see your current points balance at the top of the rewards page
+- **Reward Tiers**: Multiple reward tiers available (500, 1000, and 5000 points)
+- **Flexible Redemption**: Redeem points for individual items or combo meals
+- **Reward Options**: 
+  - 500 Points: 2x Samosa, 2x Kachori
+  - 1000 Points: 1x Veg Burger, 1x Hakka Noodles
+  - 5000 Points: Combo meals (Pav Bhaji + Lays + Coca Cola, Chole Bhature + Kurkure + Frooti)
+
+![Rewards Page](images/rewards-page.png)
+
+*The Rewards page shows your current points balance and all available redemption options organized by point tiers. Users can easily add rewards to their cart using the "+" buttons.*
+
+#### 6. Account Management
+
+Complete control over your account information and settings:
+
+- **Personal Information**: View and manage your profile details
+- **Account Details**: Access your name, email, and mobile number
+- **Password Management**: Change your password securely at any time
+- **Profile Updates**: Keep your information up to date
+
+![My Account](images/my-account.png)
+
+*The My Account page displays all your personal information in a clean, organized layout with easy access to password change functionality.*
 
 ### For Administrators
-- **Admin Dashboard**: Complete order management system
-- **Menu Management**: Add, edit, or remove food items and pricing
-- **Order Tracking**: Monitor current orders and update status
-- **User Management**: View user accounts and order history
-- **Real-time Updates**: Orders automatically update based on estimated time
 
-## 🏗️ Project Structure
+#### 1. Admin Authentication
 
-```
-Ready-to-Eat/
-├── backend/                 # Flask REST API
-│   ├── app.py              # Main Flask application
-│   ├── config.py           # Database configuration
-│   ├── models.py           # SQLAlchemy models
-│   ├── routes.py           # API endpoints
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # React.js application
-│   ├── public/             # Static assets
-│   ├── src/
-│   │   ├── components/     # Reusable React components
-│   │   ├── pages/          # Page components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── data/           # Static data files
-│   │   └── assets/         # Images and media
-│   └── package.json        # Node.js dependencies
-├── database/               # Database setup
-│   └── setup.sql           # MySQL schema and sample data
-└── venv/                   # Python virtual environment
-```
+Secure login portal exclusively for cafeteria administrators:
+
+- **Dedicated Admin Login**: Separate login interface for administrators with username-based authentication
+- **Admin Credentials**: Secure authentication system with role-based access control
+- **Session Management**: Secure session-based authentication for admin operations
+- **Access Control**: Only authorized administrators can access the admin panel
+
+![Admin Login](images/admin-login.png)
+
+*The admin login page provides a dedicated interface for cafeteria administrators. It features a clean design with separate tabs for user and admin login, allowing administrators to securely access the management panel.*
+
+#### 2. Active Orders Management
+
+Real-time order tracking and management for current orders:
+
+- **Live Order Monitoring**: View all active orders in real-time with automatic status updates
+- **Order Status Tracking**: Monitor orders through different stages (Pending, Preparing, Ready)
+- **Order Details**: View complete order information including customer name, order time, items, and quantities
+- **Status Updates**: Update order status as they progress through the preparation process
+- **Pick-up Confirmation**: Mark orders as "Picked up" once customers collect their orders
+- **Refresh Functionality**: Manual refresh button to update order status instantly
+
+![Active Orders](images/admin-active-orders.png)
+
+*The Active Orders page displays all current orders with their status, customer information, items, and quantities. Administrators can update order status and mark orders as picked up once collected by customers.*
+
+#### 3. Past Orders & History
+
+Complete order history and analytics for administrative purposes:
+
+- **Historical Data**: Access complete history of all past orders
+- **Order Analytics**: View order dates, ready times, completion times, and customer information
+- **Financial Tracking**: See total amounts for each order
+- **Points Tracking**: Monitor points earned by customers for each order
+- **Order Status**: View final status of all completed orders
+- **Order Identification**: Each order has a unique identifier for easy reference and lookup
+
+![Admin Past Orders](images/admin-past-orders.png)
+
+*The Past Orders page provides administrators with a comprehensive view of all completed orders, including order details, timestamps, items, total amounts, and points earned by customers.*
+
+#### 4. Menu Configuration
+
+Complete menu management system for cafeteria operations:
+
+- **Add Menu Items**: Add new food items to the menu with images, names, and prices
+- **Edit Pricing**: Update prices for existing menu items quickly and easily
+- **Delete Items**: Remove items from the menu when they're no longer available
+- **Visual Management**: View all menu items with their images in an organized grid layout
+- **Real-time Updates**: Changes to the menu are immediately reflected in the user interface
+- **Bulk Operations**: Manage multiple menu items efficiently from a single interface
+
+![Configure Menu](images/admin-configure-menu.png)
+
+*The Configure Menu page allows administrators to manage the entire cafeteria menu. Each item displays with its image, name, and price, along with "Edit Price" and "Delete" buttons for quick management. A prominent "+ Add Item" button enables adding new items to the menu.*
+
+#### 5. Admin Account Management
+
+Administrator profile and account settings:
+
+- **Profile Information**: View administrator account details including username, full name, and role
+- **Account Details**: Access role information (super_admin) and account identification
+- **Password Management**: Change administrator password securely
+- **Account Security**: Maintain secure access to the administrative panel
+
+![Admin My Account](images/admin-my-account.png)
+
+*The Admin My Account page displays all administrator information including username, full name, and role. Administrators can change their password to maintain account security.*
 
 ## 🚀 Quick Start (Local Development)
 
@@ -122,32 +245,7 @@ The application will open at `http://localhost:3000`
 - **Email**: `testuser@gmail.com`
 - **Password**: `Password123!`
 - **Name**: Test User
-- **Mobile**: 9999999999
-
-## 🔧 Configuration
-
-### Backend Configuration
-Edit `backend/config.py` to modify:
-- Database connection settings
-- Secret key for sessions
-- CORS origins
-
-### Frontend Configuration
-The frontend automatically connects to `http://localhost:5000` for API calls. To change this, update the proxy setting in `frontend/package.json`.
-
-## 📱 Usage
-
-1. **As a Student/Faculty**:
-   - Register a new account or use guest access
-   - Browse the menu and add items to cart
-   - Place your order and track its status
-   - Earn points and redeem rewards
-
-2. **As an Administrator**:
-   - Login with admin credentials
-   - Manage menu items and pricing
-   - Monitor and update order status
-   - View order history and user data
+- **Mobile**: 7894561230
 
 ## 🛠️ Technologies Used
 
@@ -157,56 +255,6 @@ The frontend automatically connects to `http://localhost:5000` for API calls. To
 - **Styling**: CSS3 with modern design principles
 - **Authentication**: Session-based with password hashing
 - **API**: RESTful API with JSON responses
-
-## 📋 API Endpoints
-
-### Authentication
-- `POST /api/register` - User registration
-- `POST /api/login` - User login
-- `POST /api/logout` - User logout
-- `POST /api/admin/login` - Admin login
-- `POST /api/guest/access` - Guest access
-
-### Orders
-- `GET /api/orders` - Get user orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders/<id>` - Get specific order
-- `PUT /api/orders/<id>/status` - Update order status
-
-### Admin
-- `GET /api/admin/orders` - Get all orders
-- `GET /api/admin/menu` - Get menu items
-- `POST /api/admin/menu` - Add menu item
-- `PUT /api/admin/menu/<id>` - Update menu item
-- `DELETE /api/admin/menu/<id>` - Delete menu item
-
-### User Management
-- `GET /api/user/profile` - Get user profile
-- `GET /api/user/points` - Get user points
-- `PUT /api/user/points` - Update user points
-- `PUT /api/user/change-password` - Change password
-
-## 🐛 Troubleshooting
-
-### Common Issues
-1. **Database Connection Error**: Ensure MySQL is running and credentials are correct
-2. **Port Already in Use**: Change ports in `app.py` (backend) or `package.json` (frontend)
-3. **CORS Issues**: Check that frontend is running on port 3000 and backend on port 5000
-4. **Module Not Found**: Ensure virtual environment is activated and dependencies are installed
-
-### Getting Help
-- Check the console for error messages
-- Verify all services are running
-- Ensure database is properly set up
-- Check network connectivity between frontend and backend
-
-## 🚀 Deployment
-
-This application is deployed completely free using:
-
-- **Frontend**: GitHub Pages
-- **Backend**: Railway (free tier)
-- **Database**: Railway MySQL (free tier)
 
 ## 📄 License
 
