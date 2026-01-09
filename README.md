@@ -1,5 +1,21 @@
 # Ready-to-Eat 🍽️
 
+<div align="center">
+
+**Full-Stack Food Ordering Platform | Campus Dining Made Easy**
+
+[![Flask](https://img.shields.io/badge/Flask-000000?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
+*Revolutionizing campus dining with seamless ordering, real-time tracking, and integrated rewards*
+
+</div>
+
+---
+
 **Ready-to-Eat** is a modern, full-stack food ordering platform designed exclusively for Medi-Caps University's cafeteria. Built with React.js and Flask, this application revolutionizes the campus dining experience by providing students and faculty with a seamless, digital solution for ordering food. From browsing the menu to tracking orders and earning rewards, Ready-to-Eat brings convenience and efficiency to campus dining.
 
 The platform features a beautiful, intuitive user interface with real-time order tracking, an integrated rewards system, and comprehensive admin tools for managing the cafeteria operations. Whether you're a student grabbing a quick snack between classes or an administrator managing daily operations, Ready-to-Eat streamlines the entire food ordering process.
