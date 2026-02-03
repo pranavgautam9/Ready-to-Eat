@@ -4,7 +4,7 @@ import useFoodItems from '../hooks/useFoodItems';
 import config from '../config';
 import './Rewards.css';
 
-const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
+const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType, onLogout }) => {
   const navigate = useNavigate();
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -257,7 +257,12 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
             flexWrap: 'wrap'
           }}>
             <button
-              onClick={() => navigate('/register')}
+              onClick={async () => {
+                if (onLogout) {
+                  await onLogout();
+                }
+                navigate('/register');
+              }}
               style={{
                 background: 'linear-gradient(135deg, #05288D, #9B1631)',
                 color: 'white',
@@ -282,7 +287,12 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
               Create Account
             </button>
             <button
-              onClick={() => navigate('/login')}
+              onClick={async () => {
+                if (onLogout) {
+                  await onLogout();
+                }
+                navigate('/login');
+              }}
               style={{
                 background: '#f3f4f6',
                 color: '#374151',

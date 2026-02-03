@@ -25,7 +25,7 @@ const MyAccount = ({ user, onLogout }) => {
             </div>
             <div className="detail-item">
               <label>Email:</label>
-              <span>{user?.email}</span>
+              <span>{user?.is_guest ? 'N/A' : user?.email}</span>
             </div>
             <div className="detail-item">
               <label>Mobile:</label>
