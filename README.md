@@ -7,7 +7,7 @@
 [![Flask](https://img.shields.io/badge/Flask-000000?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 *Revolutionizing campus dining with seamless ordering, real-time tracking, and integrated rewards*
@@ -188,7 +188,7 @@ Administrator profile and account settings:
 ### Prerequisites
 - Python 3.8+ 
 - Node.js 14+
-- MySQL 5.7+ or MySQL 8.0+
+- PostgreSQL 12+ or PostgreSQL 13+
 - Git
 
 ### 1. Clone the Repository
@@ -222,14 +222,14 @@ pip install -r requirements.txt
 ```
 
 ### 3. Database Setup
-1. **Install MySQL** and start the service
+1. **Install PostgreSQL** and start the service
 2. **Create database**:
    ```sql
    CREATE DATABASE ready_to_eat;
    ```
 3. **Run setup script**:
    ```bash
-   mysql -u root -p ready_to_eat < ../database/setup.sql
+   psql -U postgres -d ready_to_eat -f ../database/setup.sql
    ```
 4. **Update database credentials** in `backend/config.py` if needed
 
@@ -265,9 +265,9 @@ The application will open at `http://localhost:3000`
 
 ## 🛠️ Technologies Used
 
-- **Backend**: Python Flask, SQLAlchemy, PyMySQL
+- **Backend**: Python Flask, SQLAlchemy, psycopg2
 - **Frontend**: React.js, React Router, Axios
-- **Database**: MySQL
+- **Database**: PostgreSQL
 - **Styling**: CSS3 with modern design principles
 - **Authentication**: Session-based with password hashing
 - **API**: RESTful API with JSON responses
