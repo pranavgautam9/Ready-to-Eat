@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useFoodItems from '../hooks/useFoodItems';
 import config from '../config';
 import './Rewards.css';
 
 const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
+  const navigate = useNavigate();
   const [userPoints, setUserPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [redeemedReward, setRedeemedReward] = useState(null);
@@ -255,7 +257,7 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
             flexWrap: 'wrap'
           }}>
             <button
-              onClick={() => window.location.href = '/register'}
+              onClick={() => navigate('/register')}
               style={{
                 background: 'linear-gradient(135deg, #05288D, #9B1631)',
                 color: 'white',
@@ -280,7 +282,7 @@ const Rewards = ({ cart, onUpdateCart, onCartUpdate, userType }) => {
               Create Account
             </button>
             <button
-              onClick={() => window.location.href = '/login'}
+              onClick={() => navigate('/login')}
               style={{
                 background: '#f3f4f6',
                 color: '#374151',
